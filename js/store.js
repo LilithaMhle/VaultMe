@@ -24,7 +24,7 @@ const VM = {
       skills: [],
       // Projects: { name, desc, url, tags }
       projects: [],
-      // Videos: { name, duration }
+      // Videos: { name, duration, src (base64 data URL) }
       videos: [],
       // Extra spotlight phrases user types (shown in ticker alongside achievements)
       spotlightPhrases: [],
@@ -44,7 +44,13 @@ const VM = {
   // ── Save ──────────────────────────────────────────────────────────
   save(profile) {
     profile.profileStrength = this.calcStrength(profile);
-    localStorage.setItem('vaultme_profile', JSON.stringify(profile));
+    try {
+      localStorage.setItem('vaultme_profile', JSON.stringify(profile));
+    } catch(e) {
+      // QuotaExceededError — storage is full
+      alert('Storage limit reached. Your profile is too large to save. Try using smaller images (resize before uploading) or removing some photos.');
+      return null;
+    }
     return profile;
   },
 
@@ -67,9 +73,13 @@ const VM = {
     return Math.min(s, 100);
   },
 
-  // ── Helper: read file as base64 data URL ──────────────────────────
-  readFile(file) {
+  // ── Helper: read file as base64 data URL (with size check) ────────
+  readFile(file, maxMB) {
     return new Promise((res, rej) => {
+      if (maxMB && file.size > maxMB * 1024 * 1024) {
+        rej(new Error('FILE_TOO_LARGE'));
+        return;
+      }
       const r = new FileReader();
       r.onload = e => res(e.target.result);
       r.onerror = rej;
@@ -77,18 +87,31 @@ const VM = {
     });
   },
 
+  // ── Validate email format ─────────────────────────────────────────
+  isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  },
+
+  // ── Normalise social URL (always returns full https:// URL or '') ──
+  normaliseSocialUrl(raw) {
+    if (!raw) return '';
+    const s = raw.trim();
+    if (!s) return '';
+    // Already has a protocol
+    if (/^https?:\/\//i.test(s)) return s;
+    // Starts with www. or a known domain fragment
+    return 'https://' + s;
+  },
+
   // ── Build ticker items from profile ──────────────────────────────
   buildTickerItems(profile) {
     const items = [];
-    // From achievements
     profile.achievements.forEach(a => {
       if (a.spotlightText) items.push({ icon: 'ti-sparkles', text: a.spotlightText });
     });
-    // User-entered spotlight phrases
     profile.spotlightPhrases.forEach(p => {
       if (p) items.push({ icon: 'ti-star', text: p });
     });
-    // Auto-generated from certs/projects
     if (profile.certs.length > 0) {
       items.push({ icon: 'ti-certificate', text: `${profile.certs.length} verified certificate${profile.certs.length > 1 ? 's' : ''} — industry-recognised credentials` });
     }
@@ -99,7 +122,6 @@ const VM = {
       const top = profile.skills.slice(0,3).map(s=>s.name).join(', ');
       items.push({ icon: 'ti-trending-up', text: `Top skills: ${top}` });
     }
-    // Duplicate for seamless loop
     const doubled = [...items, ...items];
     return doubled;
   },

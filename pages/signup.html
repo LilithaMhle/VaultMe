@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Sign Up — VaultMe</title>
+<meta name="description" content="Build your VaultMe profile — organise your achievements, certificates, skills and projects."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
 <link rel="stylesheet" href="../css/shared.css"/>
 <style>
@@ -33,7 +35,7 @@
   <div class="tright"><div class="user-avatar-nav" id="navAv"></div></div>
 </nav>
 
-<div style="display:flex;align-items:flex-start;justify-content:center;min-height:calc(100vh - 52px);padding:30px 16px;background:radial-gradient(ellipse at 60% 40%,#2a000e 0%,var(--bg) 70%);">
+<div style="display:flex;align-items:flex-start;justify-content:center;min-height:calc(100vh - 52px);padding:30px 16px;background:radial-gradient(ellipse at 60% 40%,#0a1628 0%,var(--bg) 70%);">
 <div style="width:640px;">
 <div style="background:var(--c);border:.5px solid var(--bor);border-radius:18px;overflow:hidden;">
 
@@ -152,7 +154,7 @@
       <div class="fg">
         <label class="fl">CV / Résumé</label>
         <div class="upload-zone" onclick="document.getElementById('inp-cv').click()"><i class="ti ti-file-cv"></i><span>Upload your CV / Résumé</span><small>PDF &middot; max 10MB</small></div>
-        <input type="file" id="inp-cv" accept=".pdf,.doc,.docx" style="display:none" onchange="handleCV(this)"/>
+        <input type="file" id="inp-cv" accept=".pdf" style="display:none" onchange="handleCV(this)"/>
         <div id="cv-info" style="display:none;margin-top:8px;background:var(--bg2);border:.5px solid var(--bor);border-radius:8px;padding:9px 12px;align-items:center;gap:8px;">
           <i class="ti ti-file-type-pdf" style="font-size:18px;color:var(--rm);"></i>
           <div style="flex:1;font-size:12px;color:var(--t);" id="cv-fname">No file yet</div>
@@ -230,7 +232,19 @@ function prevStep(){saveAll();goStep(curStep-1);}
 
 function saveAll(){
   profile.name=getVal('f-name');profile.role=getVal('f-role');profile.location=getVal('f-location');
-  profile.email=getVal('f-email');profile.linkedin=getVal('f-linkedin');profile.github=getVal('f-github');
+  // Validate email before saving
+  var emailVal=getVal('f-email');
+  if(emailVal && !VM.isValidEmail(emailVal)){
+    var emailEl=document.getElementById('f-email');
+    if(emailEl){emailEl.style.borderColor='var(--rm)';emailEl.title='Please enter a valid email address.';}
+  } else {
+    var emailEl2=document.getElementById('f-email');
+    if(emailEl2){emailEl2.style.borderColor='';emailEl2.title='';}
+    profile.email=emailVal;
+  }
+  // Normalise social URLs
+  profile.linkedin=VM.normaliseSocialUrl(getVal('f-linkedin'));
+  profile.github=VM.normaliseSocialUrl(getVal('f-github'));
   profile.bio=getVal('f-bio');
   var a=profile.achievements||[];
   var l1=getVal('ach1-label'),s1=getVal('ach1-spot');
@@ -243,6 +257,9 @@ function saveAll(){
 function saveDraft(){saveAll();showToast();}
 function showToast(){var t=document.getElementById('toast');t.style.display='block';setTimeout(function(){t.style.display='none';},2200);}
 function getVal(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+// Auto-save when user navigates away
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')saveAll();});
+window.addEventListener('beforeunload',function(){saveAll();});
 
 function updateStrength(){
   saveAll();
@@ -265,30 +282,42 @@ function updateStrength(){
 
 async function handlePhoto(inp){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  profile.profilePhoto=b64;VM.save(profile);
-  var img=document.getElementById('preview-photo');img.src=b64;img.style.display='block';
-  var av=document.getElementById('navAv');
-  if(av)av.innerHTML='<img src="'+b64+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  try{
+    var b64=await VM.readFile(inp.files[0],5);
+    profile.profilePhoto=b64;VM.save(profile);
+    var img=document.getElementById('preview-photo');img.src=b64;img.style.display='block';
+    var av=document.getElementById('navAv');
+    if(av)av.innerHTML='<img src="'+b64+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('Profile photo must be under 5 MB. Please resize the image and try again.');
+  }
 }
 async function handleAchPhoto(inp,idx){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  var a=profile.achievements||[];
-  if(!a[idx-1])a[idx-1]={label:'',spotlightText:'',photo:''};
-  a[idx-1].photo=b64;
-  var l=getVal('ach'+idx+'-label');var s=getVal('ach'+idx+'-spot');
-  if(l)a[idx-1].label=l;if(s)a[idx-1].spotlightText=s;
-  profile.achievements=a;VM.save(profile);
-  showImg('prev-ach'+idx,b64);
+  try{
+    var b64=await VM.readFile(inp.files[0],5);
+    var a=profile.achievements||[];
+    if(!a[idx-1])a[idx-1]={label:'',spotlightText:'',photo:''};
+    a[idx-1].photo=b64;
+    var l=getVal('ach'+idx+'-label');var s=getVal('ach'+idx+'-spot');
+    if(l)a[idx-1].label=l;if(s)a[idx-1].spotlightText=s;
+    profile.achievements=a;VM.save(profile);
+    showImg('prev-ach'+idx,b64);
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('Achievement photo must be under 5 MB. Please resize the image and try again.');
+  }
 }
 async function handleCV(inp){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  profile.cv=b64;profile.cvName=inp.files[0].name;VM.save(profile);
-  var ci=document.getElementById('cv-info');ci.style.display='flex';
-  document.getElementById('cv-fname').textContent=inp.files[0].name;
-  updateStrength();
+  try{
+    var b64=await VM.readFile(inp.files[0],10);
+    profile.cv=b64;profile.cvName=inp.files[0].name;VM.save(profile);
+    var ci=document.getElementById('cv-info');ci.style.display='flex';
+    document.getElementById('cv-fname').textContent=inp.files[0].name;
+    updateStrength();
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('CV must be under 10 MB. Please compress the PDF and try again.');
+  }
 }
 function previewBadge(idx){
   var lbl=getVal('ach'+idx+'-label');
@@ -307,7 +336,7 @@ function removeCert(i){profile.certs.splice(i,1);VM.save(profile);renderCertList
 function renderCertList(){
   var el=document.getElementById('cert-list');if(!el)return;
   el.innerHTML=(profile.certs||[]).map(function(c,i){
-    return '<div class="list-item"><i class="ti ti-certificate" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(c.name)+'</div><div style="font-size:10px;color:var(--t2);">'+esc(c.org)+(c.year?' &middot; '+esc(c.year):'')+'</div></div><button class="rm-btn" onclick="removeCert('+i+')"><i class="ti ti-trash"></i></button></div>';
+    return '<div class="list-item"><i class="ti ti-certificate" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(c.name)+'</div><div style="font-size:10px;color:var(--t2);">'+esc(c.org)+(c.year?' &middot; '+esc(c.year):'')+'</div></div><button class="rm-btn" onclick="removeCert('+i+')" aria-label="Remove certificate" title="Remove"><i class="ti ti-trash"></i></button></div>';
   }).join('');
 }
 function addSkill(){
@@ -336,7 +365,7 @@ function removeProj(i){profile.projects.splice(i,1);VM.save(profile);renderProjL
 function renderProjList(){
   var el=document.getElementById('proj-list');if(!el)return;
   el.innerHTML=(profile.projects||[]).map(function(p,i){
-    return '<div class="list-item"><i class="ti ti-folder-code" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(p.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(p.url?'<a href="'+esc(p.url)+'" target="_blank" style="color:var(--rm);">live demo</a> &middot; ':'')+esc((p.tags||[]).join(', '))+'</div></div><button class="rm-btn" onclick="removeProj('+i+')"><i class="ti ti-trash"></i></button></div>';
+    return '<div class="list-item"><i class="ti ti-folder-code" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(p.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(p.url?'<a href="'+esc(p.url)+'" target="_blank" style="color:var(--rm);">live demo</a> &middot; ':'')+esc((p.tags||[]).join(', '))+'</div></div><button class="rm-btn" onclick="removeProj('+i+')" aria-label="Remove project" title="Remove"><i class="ti ti-trash"></i></button></div>';
   }).join('');
 }
 function addVideo(){
@@ -350,7 +379,7 @@ function removeVid(i){profile.videos.splice(i,1);VM.save(profile);renderVidList(
 function renderVidList(){
   var el=document.getElementById('vid-list');if(!el)return;
   el.innerHTML=(profile.videos||[]).map(function(v,i){
-    return '<div class="list-item"><i class="ti ti-video" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(v.duration||'')+'</div></div><button class="rm-btn" onclick="removeVid('+i+')"><i class="ti ti-trash"></i></button></div>';
+    return '<div class="list-item"><i class="ti ti-video" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(v.duration||'')+'</div></div><button class="rm-btn" onclick="removeVid('+i+')" aria-label="Remove video" title="Remove"><i class="ti ti-trash"></i></button></div>';
   }).join('');
 }
 function addPhrase(){

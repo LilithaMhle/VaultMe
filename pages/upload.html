@@ -2,6 +2,8 @@
 <html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Upload Assets — VaultMe</title>
+<meta name="description" content="Upload and manage your VaultMe assets — CV, photos and videos."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
 <link rel="stylesheet" href="../css/shared.css"/>
 </head><body>
@@ -66,13 +68,10 @@
       <!-- Videos -->
       <div class="card" style="grid-column:1/-1;">
         <div class="ch"><div class="ct"><i class="ti ti-video"></i> Videos</div></div>
-        <div style="font-size:11px;color:var(--rm);margin-bottom:10px;display:flex;align-items:center;gap:4px;font-weight:500;"><i class="ti ti-info-circle" style="font-size:11px;"></i> Max 3 minutes per video &middot; MP4, MOV</div>
+        <div style="font-size:11px;color:var(--rm);margin-bottom:10px;display:flex;align-items:center;gap:4px;font-weight:500;"><i class="ti ti-info-circle" style="font-size:11px;"></i> Max 3 minutes per video &middot; MP4, MOV &middot; max 100MB each</div>
         <div id="vid-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
-        <div style="display:flex;gap:8px;align-items:flex-end;margin-bottom:8px;">
-          <div class="fg" style="flex:1;margin:0;"><label class="fl">Video title</label><input class="fi" id="vid-name" placeholder="e.g. About me"/></div>
-          <div class="fg" style="margin:0;"><label class="fl">Duration</label><input class="fi" id="vid-dur" placeholder="2:34" style="width:80px;"/></div>
-          <button class="btn btnr" onclick="addVid()"><i class="ti ti-plus"></i> Add</button>
-        </div>
+        <div class="upload-zone" onclick="document.getElementById('inp-vid').click()"><i class="ti ti-video-plus" style="font-size:22px;"></i><span>Upload a video</span><small>MP4, MOV &middot; max 100 MB &middot; max 3 min</small></div>
+        <input type="file" id="inp-vid" accept="video/mp4,video/quicktime,.mp4,.mov" style="display:none" onchange="handleVid(this)"/>
       </div>
 
     </div>
@@ -112,45 +111,78 @@ function renderAchUpload(){
   if(!profile.achievements||!profile.achievements.length){grid.innerHTML='<div style="font-size:12px;color:var(--b3);padding:10px;">No achievements set yet. <a href="signup.html" style="color:var(--rm);">Add achievements first</a>.</div>';return;}
   grid.innerHTML=profile.achievements.map(function(a,i){
     var imgHtml=a.photo?'<img src="'+a.photo+'" style="width:100%;height:100px;object-fit:cover;object-position:top;border-radius:8px;margin-bottom:8px;display:block;"/>':'';
-    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--rm);margin-bottom:8px;"><i class="ti ti-sparkles" style="font-size:11px;margin-right:3px;"></i>Achievement '+(i+1)+': '+esc(a.label)+'</div>'+imgHtml+'<div class="upload-zone" style="padding:10px;" onclick="document.getElementById('inp-ach'+i+'').click()"><i class="ti ti-photo" style="font-size:18px;"></i><span>'+(a.photo?'Replace photo':'Upload photo')+'</span></div><input type="file" id="inp-ach'+i+'" accept="image/*" style="display:none" onchange="handleAchPhoto(this,'+i+')"/></div>';
+    var zoneId='inp-ach'+i;
+    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:12px;"><div style="font-size:11px;font-weight:600;color:var(--rm);margin-bottom:8px;"><i class="ti ti-sparkles" style="font-size:11px;margin-right:3px;"></i>Achievement '+(i+1)+': '+esc(a.label)+'</div>'+imgHtml+'<div class="upload-zone" style="padding:10px;" onclick="document.getElementById(\''+zoneId+'\').click()"><i class="ti ti-photo" style="font-size:18px;"></i><span>'+(a.photo?'Replace photo':'Upload photo')+'</span></div><input type="file" id="'+zoneId+'" accept="image/*" style="display:none" onchange="handleAchPhoto(this,'+i+')"/></div>';
   }).join('');
 }
 function renderVidList(){
   var el=document.getElementById('vid-list');
   el.innerHTML=(profile.videos||[]).map(function(v,i){
-    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:7px;padding:8px 11px;display:flex;align-items:center;gap:8px;"><i class="ti ti-video" style="color:var(--rm);font-size:14px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(v.duration||'')+'</div></div><button onclick="removeVid('+i+')" style="background:transparent;border:none;color:var(--rm);cursor:pointer;"><i class="ti ti-trash" style="font-size:13px;"></i></button></div>';
+    var playerHtml=v.src
+      ? '<video src="'+v.src+'" controls style="width:100%;height:80px;border-radius:6px;margin-top:6px;background:#000;"></video>'
+      : '';
+    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:7px;padding:8px 11px;"><div style="display:flex;align-items:center;gap:8px;"><i class="ti ti-video" style="color:var(--rm);font-size:14px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(v.duration||'')+'</div></div><button onclick="removeVid('+i+')" aria-label="Remove video" title="Remove" style="background:transparent;border:none;color:var(--rm);cursor:pointer;"><i class="ti ti-trash" style="font-size:13px;"></i></button></div>'+playerHtml+'</div>';
   }).join('');
 }
 async function handleCV(inp){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  profile.cv=b64;profile.cvName=inp.files[0].name;VM.save(profile);
-  var ci=document.getElementById('cv-info');ci.style.display='flex';
-  document.getElementById('cv-fname').textContent=inp.files[0].name;
-  var dl=document.getElementById('cv-dl');dl.href=b64;dl.download=inp.files[0].name;
-  toast();
+  try{
+    var b64=await VM.readFile(inp.files[0],10);
+    profile.cv=b64;profile.cvName=inp.files[0].name;VM.save(profile);
+    var ci=document.getElementById('cv-info');ci.style.display='flex';
+    document.getElementById('cv-fname').textContent=inp.files[0].name;
+    var dl=document.getElementById('cv-dl');dl.href=b64;dl.download=inp.files[0].name;
+    toast();
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('CV must be under 10 MB. Please compress the PDF and try again.');
+  }
 }
 async function handlePhoto(inp){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  profile.profilePhoto=b64;VM.save(profile);
-  var pp=document.getElementById('photo-preview');pp.src=b64;pp.style.display='block';
-  initNav();toast();
+  try{
+    var b64=await VM.readFile(inp.files[0],5);
+    profile.profilePhoto=b64;VM.save(profile);
+    var pp=document.getElementById('photo-preview');pp.src=b64;pp.style.display='block';
+    initNav();toast();
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('Profile photo must be under 5 MB. Please resize the image and try again.');
+  }
 }
 async function handleAchPhoto(inp,idx){
   if(!inp.files[0])return;
-  var b64=await VM.readFile(inp.files[0]);
-  if(!profile.achievements[idx])return;
-  profile.achievements[idx].photo=b64;VM.save(profile);
-  renderAchUpload();toast();
+  try{
+    var b64=await VM.readFile(inp.files[0],5);
+    if(!profile.achievements[idx])return;
+    profile.achievements[idx].photo=b64;VM.save(profile);
+    renderAchUpload();toast();
+  }catch(e){
+    if(e&&e.message==='FILE_TOO_LARGE')alert('Achievement photo must be under 5 MB. Please resize the image and try again.');
+  }
 }
-function addVid(){
-  var n=document.getElementById('vid-name').value.trim();
-  var d=document.getElementById('vid-dur').value.trim();
-  if(!n)return;
-  profile.videos=profile.videos||[];profile.videos.push({name:n,duration:d});VM.save(profile);
-  document.getElementById('vid-name').value='';document.getElementById('vid-dur').value='';
-  renderVidList();toast();
+async function handleVid(inp){
+  if(!inp.files[0])return;
+  var file=inp.files[0];
+  // 100MB limit
+  if(file.size>100*1024*1024){alert('Video must be under 100 MB.');inp.value='';return;}
+  var name=file.name.replace(/\.[^.]+$/,'');
+  // Get duration via a temporary video element
+  var url=URL.createObjectURL(file);
+  var tmpVid=document.createElement('video');
+  tmpVid.preload='metadata';
+  tmpVid.onloadedmetadata=async function(){
+    URL.revokeObjectURL(url);
+    var secs=Math.round(tmpVid.duration);
+    var dur=Math.floor(secs/60)+':'+(secs%60<10?'0':'')+(secs%60);
+    if(secs>180){alert('Video must be 3 minutes or less (this one is '+dur+'). Please trim it and try again.');inp.value='';return;}
+    var b64=await VM.readFile(file,100);
+    profile.videos=profile.videos||[];
+    profile.videos.push({name:name,duration:dur,src:b64});
+    VM.save(profile);
+    renderVidList();toast();
+    inp.value='';
+  };
+  tmpVid.onerror=function(){alert('Could not read video file. Please try a different file.');inp.value='';};
+  tmpVid.src=url;
 }
 function removeVid(i){profile.videos.splice(i,1);VM.save(profile);renderVidList();}
 function toast(){var t=document.getElementById('toast');t.style.display='block';setTimeout(function(){t.style.display='none';},1800);}

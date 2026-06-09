@@ -2,10 +2,12 @@
 <html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Public Profile — VaultMe</title>
+<meta name="description" content="View this VaultMe public profile — achievements, certificates, projects and skills."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
 <link rel="stylesheet" href="../css/shared.css"/>
 <style>
-.pub-nav{position:sticky;top:0;z-index:100;background:rgba(9,0,15,.92);backdrop-filter:blur(14px);border-bottom:.5px solid var(--bor);padding:0 40px;height:54px;display:flex;align-items:center;justify-content:space-between;}
+.pub-nav{position:sticky;top:0;z-index:100;background:rgba(6,11,20,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:.5px solid var(--bor);padding:0 40px;height:54px;display:flex;align-items:center;justify-content:space-between;}
 .pub-body{max-width:1100px;margin:0 auto;padding:36px 40px;}
 .pub-section{margin-bottom:44px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -39,7 +41,7 @@
 <div id="ticker-mount"></div>
 
 <!-- HERO -->
-<section style="position:relative;overflow:hidden;padding:50px 40px 10px;background:radial-gradient(ellipse at 20% 80%,rgba(190,24,93,.14),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(127,29,70,.1),transparent 50%),var(--bg);">
+<section style="position:relative;overflow:hidden;padding:50px 40px 10px;background:radial-gradient(ellipse at 20% 80%,rgba(29,78,216,.14),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(30,58,95,.1),transparent 50%),var(--bg);">
   <div style="position:absolute;inset:0;background-image:linear-gradient(var(--bor) .5px,transparent .5px),linear-gradient(90deg,var(--bor) .5px,transparent .5px);background-size:60px 60px;opacity:.08;pointer-events:none;"></div>
   <div style="position:relative;z-index:2;max-width:1100px;margin:0 auto;display:flex;gap:50px;align-items:flex-start;flex-wrap:wrap;">
     <div style="flex:1;min-width:260px;padding-top:20px;">
@@ -108,10 +110,10 @@
 
 <script src="../js/store.js"></script>
 <script>
-var COLORS=['#0f1a2e','#1c0030','#0f1a00','#1a0010','#001a20','#1a1000','#0a1a30','#160030'];
-var ICOLORS=['#60a5fa','#c084fc','#86efac','#f9a8d4','#67e8f9','#facc15','#93c5fd','#a78bfa'];
+var COLORS=['#0a1628','#0d1e3a','#0f2347','#071428','#0c1d38','#091630','#0e2040','#071020'];
+var ICOLORS=['#60a5fa','#c084fc','#86efac','#93c5fd','#67e8f9','#facc15','#93c5fd','#a78bfa'];
 var ICONS=['ti-certificate','ti-cloud','ti-shield','ti-brain','ti-database','ti-brand-windows','ti-code','ti-star'];
-var VID_BG=['linear-gradient(145deg,#3d0018,#1a000c)','linear-gradient(145deg,#0f1a2e,#060d18)','linear-gradient(145deg,#0f1a00,#040a00)'];
+var VID_BG=['linear-gradient(145deg,#0a1628,#1d4ed8)','linear-gradient(145deg,#0f1a2e,#1e3a5f)','linear-gradient(145deg,#0d1a30,#0a1628)'];
 
 window.addEventListener('DOMContentLoaded', function(){
   var p = VM.load();
@@ -137,10 +139,12 @@ window.addEventListener('DOMContentLoaded', function(){
 
   // CTA
   var ctas='';
-  if(p.email){ ctas+='<a class="btn btnr" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:12px;"></i> Get in touch</a>'; document.getElementById('email-btn').style.display='inline-flex'; document.getElementById('email-btn').href='mailto:'+p.email; }
+  var linkedinUrl=VM.normaliseSocialUrl(p.linkedin);
+  var githubUrl=VM.normaliseSocialUrl(p.github);
+  if(p.email&&VM.isValidEmail(p.email)){ ctas+='<a class="btn btnr" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:12px;"></i> Get in touch</a>'; document.getElementById('email-btn').style.display='inline-flex'; document.getElementById('email-btn').href='mailto:'+p.email; }
   if(p.cv){ ctas+='<a class="btn" href="'+p.cv+'" download="'+(p.cvName||'CV.pdf')+'"><i class="ti ti-download" style="font-size:12px;"></i> Download CV</a>'; document.getElementById('cv-pub-btn').style.display='inline-flex'; document.getElementById('cv-pub-btn').href=p.cv; document.getElementById('cv-pub-btn').download=p.cvName||'CV.pdf'; }
-  if(p.linkedin){ ctas+='<a class="btn" href="https://'+p.linkedin.replace(/^https?:\/\//,'')+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:12px;"></i> LinkedIn</a>'; }
-  if(p.github){ ctas+='<a class="btn" href="https://'+p.github.replace(/^https?:\/\//,'')+'" target="_blank"><i class="ti ti-brand-github" style="font-size:12px;"></i> GitHub</a>'; }
+  if(linkedinUrl){ ctas+='<a class="btn" href="'+esc(linkedinUrl)+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:12px;"></i> LinkedIn</a>'; }
+  if(githubUrl){ ctas+='<a class="btn" href="'+esc(githubUrl)+'" target="_blank"><i class="ti ti-brand-github" style="font-size:12px;"></i> GitHub</a>'; }
   document.getElementById('pub-cta').innerHTML=ctas;
 
   // Animation
@@ -151,7 +155,7 @@ window.addEventListener('DOMContentLoaded', function(){
     document.getElementById('pub-ach-sec').style.display='block';
     document.getElementById('pub-ach-grid').innerHTML=p.achievements.map(function(a){
       var img=a.photo?'<img src="'+a.photo+'" style="width:100%;height:180px;object-fit:cover;object-position:top;border-radius:10px;margin-bottom:12px;"/>':'<div style="width:100%;height:100px;background:var(--b2);border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-photo" style="font-size:28px;color:var(--b3);"></i></div>';
-      return '<div style="background:linear-gradient(135deg,#0f0035,#1a000c);border:.5px solid var(--bor);border-radius:16px;padding:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,.15),transparent 70%);pointer-events:none;"></div><div style="position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;z-index:2;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i>'+esc(a.label)+'</div>'+img+'<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;color:var(--t);">'+esc(a.label)+'</div><div style="font-size:12px;color:var(--t2);margin-top:6px;line-height:1.6;">'+esc(a.spotlightText)+'</div></div>';
+      return '<div style="background:linear-gradient(135deg,#060b14,#0d1a30);border:.5px solid var(--bor);border-radius:16px;padding:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);pointer-events:none;"></div><div style="position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;z-index:2;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i>'+esc(a.label)+'</div>'+img+'<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;color:var(--t);">'+esc(a.label)+'</div><div style="font-size:12px;color:var(--t2);margin-top:6px;line-height:1.6;">'+esc(a.spotlightText)+'</div></div>';
     }).join('');
   }
 
@@ -184,16 +188,19 @@ window.addEventListener('DOMContentLoaded', function(){
   if(p.videos&&p.videos.length){
     document.getElementById('pub-vid-sec').style.display='block';
     document.getElementById('pub-vid-grid').innerHTML=p.videos.map(function(v,i){
-      return '<div style="background:var(--c);border:.5px solid var(--bor);border-radius:13px;overflow:hidden;"><div style="height:140px;background:'+VID_BG[i%3]+';display:flex;align-items:center;justify-content:center;"><div style="width:44px;height:44px;border-radius:50%;border:2px solid var(--rm);display:flex;align-items:center;justify-content:center;color:var(--rm);"><i class="ti ti-player-play" style="font-size:16px;margin-left:3px;"></i></div></div><div style="padding:12px 14px;"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
+      var mediaHtml = v.src
+        ? '<video src="'+v.src+'" controls style="width:100%;height:140px;object-fit:cover;display:block;background:#000;"></video>'
+        : '<div style="height:140px;background:'+VID_BG[i%3]+';display:flex;align-items:center;justify-content:center;"><i class="ti ti-video-off" style="font-size:24px;color:var(--b3);"></i></div>';
+      return '<div style="background:var(--c);border:.5px solid var(--bor);border-radius:13px;overflow:hidden;">'+mediaHtml+'<div style="padding:12px 14px;"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
     }).join('');
   }
 
   // Footer
   document.getElementById('foot-name').textContent = p.name||'';
   var flinks='';
-  if(p.email)flinks+='<a class="flink" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:13px;"></i> '+esc(p.email)+'</a>';
-  if(p.linkedin)flinks+='<a class="flink" href="https://'+p.linkedin.replace(/^https?:\/\//,'')+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:13px;"></i> LinkedIn</a>';
-  if(p.github)flinks+='<a class="flink" href="https://'+p.github.replace(/^https?:\/\//,'')+'" target="_blank"><i class="ti ti-brand-github" style="font-size:13px;"></i> GitHub</a>';
+  if(p.email&&VM.isValidEmail(p.email))flinks+='<a class="flink" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:13px;"></i> '+esc(p.email)+'</a>';
+  if(linkedinUrl)flinks+='<a class="flink" href="'+esc(linkedinUrl)+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:13px;"></i> LinkedIn</a>';
+  if(githubUrl)flinks+='<a class="flink" href="'+esc(githubUrl)+'" target="_blank"><i class="ti ti-brand-github" style="font-size:13px;"></i> GitHub</a>';
   document.getElementById('foot-links').innerHTML=flinks;
   if(p.cv){ var fc=document.getElementById('foot-cv');fc.style.display='inline-flex';fc.href=p.cv;fc.download=p.cvName||'CV.pdf'; }
 });

@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Dashboard — VaultMe</title>
+<meta name="description" content="VaultMe — your personal achievement vault. Track certificates, projects, skills and showcase your career."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
 <link rel="stylesheet" href="css/shared.css"/>
 </head>
@@ -29,10 +31,10 @@
     <div class="snav">
       <a class="ni on" href="index.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
       <a class="ni" href="pages/signup.html"><i class="ti ti-user-edit"></i> Edit profile</a>
-      <a class="ni" href="#certs"><i class="ti ti-certificate"></i> Certificates</a>
-      <a class="ni" href="#projects"><i class="ti ti-folder-code"></i> Projects</a>
-      <a class="ni" href="#skills"><i class="ti ti-star"></i> Skills</a>
-      <a class="ni" href="#videos"><i class="ti ti-video"></i> Videos</a>
+      <a class="ni" href="#" onclick="navScrollTo('certs-section');return false;"><i class="ti ti-certificate"></i> Certificates</a>
+      <a class="ni" href="#" onclick="navScrollTo('projects-section');return false;"><i class="ti ti-folder-code"></i> Projects</a>
+      <a class="ni" href="#" onclick="navScrollTo('skills-section');return false;"><i class="ti ti-star"></i> Skills</a>
+      <a class="ni" href="#" onclick="navScrollTo('videos-section');return false;"><i class="ti ti-video"></i> Videos</a>
       <a class="ni" href="pages/analytics.html"><i class="ti ti-chart-bar"></i> Analytics</a>
       <a class="ni" href="pages/upload.html"><i class="ti ti-upload"></i> Upload assets</a>
       <a class="ni" href="pages/public.html"><i class="ti ti-eye"></i> Public view</a>
@@ -49,7 +51,7 @@
 
       <!-- HERO: animation + profile info -->
       <div style="background:var(--c);border:.5px solid var(--bor);border-radius:16px;padding:18px 18px 0;position:relative;overflow:hidden;">
-        <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(190,24,93,.12),transparent 70%);pointer-events:none;"></div>
+        <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(29,78,216,.12),transparent 70%);pointer-events:none;"></div>
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;position:relative;z-index:2;">
           <div style="flex:1;">
             <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t);" id="d-name">Loading...</div>
@@ -77,21 +79,18 @@
 
       <!-- CERTIFICATES -->
       <div id="certs-section" style="display:none;">
-        <a name="certs"></a>
         <div class="section-title"><i class="ti ti-certificate" style="font-size:13px;"></i> Certificates</div>
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="certs-grid"></div>
       </div>
 
       <!-- PROJECTS -->
       <div id="projects-section" style="display:none;">
-        <a name="projects"></a>
         <div class="section-title"><i class="ti ti-folder-code" style="font-size:13px;"></i> Projects</div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="projects-grid"></div>
       </div>
 
       <!-- SKILLS -->
       <div id="skills-section" style="display:none;">
-        <a name="skills"></a>
         <div class="card">
           <div class="ch"><div class="ct"><i class="ti ti-star"></i> Skills</div></div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;" id="skills-grid"></div>
@@ -100,7 +99,6 @@
 
       <!-- VIDEOS -->
       <div id="videos-section" style="display:none;">
-        <a name="videos"></a>
         <div class="card">
           <div class="ch"><div class="ct"><i class="ti ti-video"></i> Video showcase</div>
             <a class="addb btn btn-sm" href="pages/upload.html" style="font-size:10px;">+ Upload (max 3 min)</a>
@@ -127,7 +125,7 @@
     <div class="cwh">
       <div class="cwav"><i class="ti ti-robot"></i></div>
       <div><div class="cwname">Vela</div><div class="cwst"><div class="cwdot"></div> Career AI &middot; online</div></div>
-      <button class="cwx" onclick="toggleC(event)">&#215;</button>
+      <button class="cwx" onclick="toggleC(event)" aria-label="Close chat" title="Close chat"><button class="cwx" onclick="toggleC(event)">&#215;</button>#215;</button>
     </div>
     <div class="cwmsgs" id="cwm">
       <div class="cm ai" id="vela-greeting">Hi! I'm Vela, your Career AI. Loading your profile...</div>
@@ -140,19 +138,55 @@
     </div>
     <div class="cwinp">
       <input type="text" id="cwinput" placeholder="Ask Vela anything..." onkeydown="if(event.key==='Enter')sendV();"/>
-      <button class="cwsend" onclick="sendV()"><i class="ti ti-send" style="font-size:12px;"></i></button>
+      <button class="cwsend" onclick="sendV()" aria-label="Send message" title="Send message"><i class="ti ti-send" style="font-size:12px;"></i></button>
     </div>
   </div>
-  <button class="fbtn" onclick="toggleC(event)"><div class="fpulse"></div><i class="ti ti-robot"></i></button>
+  <button class="fbtn" onclick="toggleC(event)" aria-label="Open Vela AI chat" title="Open Vela AI chat"><div class="fpulse"></div><i class="ti ti-robot"></i></button>
   <div class="flbl">Vela AI</div>
 </div>
 
 <script src="js/store.js"></script>
 <script src="js/vela.js"></script>
 <script>
-var COLORS = ['#0f1a2e','#1c0030','#0f1a00','#1a0010','#001a20','#1a1000','#0a1a30','#160030'];
-var ICON_COLORS = ['#60a5fa','#c084fc','#86efac','#f9a8d4','#67e8f9','#facc15','#93c5fd','#a78bfa'];
+var COLORS = ['#0a1628','#0d1e3a','#0f2347','#071428','#0c1d38','#091630','#0e2040','#071020'];
+var ICON_COLORS = ['#60a5fa','#c084fc','#86efac','#93c5fd','#67e8f9','#facc15','#93c5fd','#a78bfa'];
 var ICONS = ['ti-certificate','ti-cloud','ti-shield','ti-brain','ti-database','ti-brand-windows','ti-code','ti-star','ti-rocket','ti-sparkles'];
+
+// Scroll the inner content panel to a section by ID.
+// If the section is hidden (no data), show a friendly nudge toast instead.
+function navScrollTo(sectionId) {
+  var el = document.getElementById(sectionId);
+  if (!el) return;
+  if (el.style.display === 'none' || el.style.display === '') {
+    showNavToast(sectionId);
+    return;
+  }
+  var container = document.getElementById('main-content');
+  var offset = el.offsetTop - container.offsetTop - 12;
+  container.scrollTo({ top: offset, behavior: 'smooth' });
+  // Highlight the active nav item
+  document.querySelectorAll('.ni').forEach(function(a){ a.classList.remove('on'); });
+  var map = {'certs-section':'Certificates','projects-section':'Projects','skills-section':'Skills','videos-section':'Videos'};
+  document.querySelectorAll('.ni').forEach(function(a){
+    if (a.textContent.trim().indexOf(map[sectionId]) !== -1) a.classList.add('on');
+  });
+}
+
+function showNavToast(sectionId) {
+  var labels = {'certs-section':'certificates','projects-section':'projects','skills-section':'skills','videos-section':'videos'};
+  var label = labels[sectionId] || 'content';
+  var t = document.getElementById('nav-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'nav-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--c2);border:.5px solid var(--bor);color:var(--t);font-size:12px;padding:9px 18px;border-radius:9px;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+    document.body.appendChild(t);
+  }
+  t.textContent = 'No ' + label + ' yet — add them in Edit profile';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 2500);
+}
 
 window.addEventListener('DOMContentLoaded', function(){
   var p = VM.load();
@@ -179,7 +213,7 @@ function renderAll(p) {
   }
 
   // Check if profile is empty
-  var isEmpty = !p.name && !p.achievements.length && !p.certs.length;
+  var isEmpty = !p.name && !p.achievements.length && !p.certs.length && !p.projects.length && !p.skills.length;
   if (isEmpty) { document.getElementById('empty-state').style.display='block'; return; }
 
   // Hero text
@@ -252,12 +286,14 @@ function renderAll(p) {
   // Videos
   if (p.videos && p.videos.length) {
     document.getElementById('videos-section').style.display='block';
-    var vidColors=['linear-gradient(145deg,#3d0018,#1a000c)','linear-gradient(145deg,#0f1a2e,#060d18)','linear-gradient(145deg,#0f1a00,#040a00)'];
     document.getElementById('videos-grid').innerHTML = p.videos.map(function(v,i){
-      return '<div style="background:var(--c2);border:.5px solid var(--bor);border-radius:12px;overflow:hidden;"><div style="height:110px;background:'+vidColors[i%3]+';display:flex;align-items:center;justify-content:center;"><div style="width:38px;height:38px;border-radius:50%;border:2px solid var(--rm);display:flex;align-items:center;justify-content:center;color:var(--rm);"><i class="ti ti-player-play" style="font-size:15px;margin-left:2px;"></i></div></div><div style="padding:9px 11px;"><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
+      var mediaHtml = v.src
+        ? '<video src="'+v.src+'" controls style="width:100%;height:110px;object-fit:cover;border-radius:10px 10px 0 0;display:block;background:#000;"></video>'
+        : '<div style="height:110px;background:linear-gradient(145deg,#0a1628,#0d1a30);display:flex;align-items:center;justify-content:center;border-radius:10px 10px 0 0;"><i class="ti ti-video-off" style="font-size:22px;color:var(--b3);"></i></div>';
+      return '<div style="background:var(--c2);border:.5px solid var(--bor);border-radius:12px;overflow:hidden;">'+mediaHtml+'<div style="padding:9px 11px;"><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
     }).join('');
     // add upload slot
-    document.getElementById('videos-grid').innerHTML += '<div style="background:var(--c2);border:1.5px dashed var(--bor);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;min-height:110px;" onclick="window.location.href='pages/upload.html'"><i class="ti ti-cloud-upload" style="font-size:20px;color:var(--rm);"></i><div style="font-size:10px;color:var(--t2);">Upload video</div><div style="font-size:9px;color:var(--b3);">max 3 min</div></div>';
+    document.getElementById('videos-grid').innerHTML += '<div style="background:var(--c2);border:1.5px dashed var(--bor);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;min-height:110px;" onclick="window.location.href=\'pages/upload.html\'"><i class="ti ti-cloud-upload" style="font-size:20px;color:var(--rm);"></i><div style="font-size:10px;color:var(--t2);">Upload video</div><div style="font-size:9px;color:var(--b3);">max 3 min</div></div>';
   }
 }
 

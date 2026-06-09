@@ -2,6 +2,8 @@
 <html lang="en"><head>
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>Analytics — VaultMe</title>
+<meta name="description" content="VaultMe Analytics — track your profile completion and skill coverage."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
 <link rel="stylesheet" href="../css/shared.css"/>
 </head><body>
@@ -36,13 +38,14 @@
 
     <!-- Completion ring -->
     <div class="card">
-      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t);margin-bottom:16px;display:flex;align-items:center;gap:6px;"><i class="ti ti-chart-donut" style="color:var(--rm);"></i> Profile completion</div>
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--t);margin-bottom:4px;display:flex;align-items:center;gap:6px;"><i class="ti ti-chart-donut" style="color:var(--rm);"></i> Profile completion</div>
+      <div style="font-size:11px;color:var(--b3);margin-bottom:16px;"><i class="ti ti-info-circle" style="font-size:11px;"></i> Analytics show your profile strength and data coverage — not visitor tracking.</div>
       <div style="display:flex;align-items:center;gap:22px;">
         <svg width="100" height="100" viewBox="0 0 100 100" style="flex-shrink:0;">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="#3d0018" stroke-width="10"/>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#0f2040" stroke-width="10"/>
           <circle cx="50" cy="50" r="40" fill="none" id="ring-fill" stroke="url(#rg)" stroke-width="10" stroke-dasharray="251.2" stroke-dashoffset="251.2" stroke-linecap="round" transform="rotate(-90 50 50)"/>
-          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#be185d"/><stop offset="100%" stop-color="#ec4899"/></linearGradient></defs>
-          <text x="50" y="55" text-anchor="middle" font-size="17" fill="#fdf2f8" font-weight="700" font-family="Syne,sans-serif" id="ring-pct">0%</text>
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#1d4ed8"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient></defs>
+          <text x="50" y="55" text-anchor="middle" font-size="17" fill="#f0f6ff" font-weight="700" font-family="Syne,sans-serif" id="ring-pct">0%</text>
         </svg>
         <div style="flex:1;">
           <div style="font-family:'Syne',sans-serif;font-size:32px;font-weight:700;color:var(--t);" id="big-pct">0%</div>
@@ -79,15 +82,15 @@
   <div class="cwin" id="cwin">
     <div class="cwh"><div class="cwav"><i class="ti ti-robot"></i></div>
       <div><div class="cwname">Vela</div><div class="cwst"><div class="cwdot"></div> Career AI &middot; online</div></div>
-      <button class="cwx" onclick="toggleC(event)">&#215;</button></div>
+      <button class="cwx" onclick="toggleC(event)" aria-label="Close chat" title="Close chat"><button class="cwx" onclick="toggleC(event)">&#215;</button>#215;</button></div>
     <div class="cwmsgs" id="cwm"><div class="cm ai" id="vela-greeting">Hi! Loading your profile...</div></div>
     <div class="cwqs" id="cwqs">
       <div class="cq" data-key="ready" onclick="askV('ready')">Am I ready for job applications?</div>
       <div class="cq" data-key="learn" onclick="askV('learn')">What should I learn next?</div>
     </div>
-    <div class="cwinp"><input type="text" id="cwinput" placeholder="Ask Vela..." onkeydown="if(event.key==='Enter')sendV();"/><button class="cwsend" onclick="sendV()"><i class="ti ti-send" style="font-size:12px;"></i></button></div>
+    <div class="cwinp"><input type="text" id="cwinput" placeholder="Ask Vela..." onkeydown="if(event.key==='Enter')sendV();"/><button class="cwsend" onclick="sendV()" aria-label="Send message" title="Send message"><i class="ti ti-send" style="font-size:12px;"></i></button></div>
   </div>
-  <button class="fbtn" onclick="toggleC(event)"><div class="fpulse"></div><i class="ti ti-robot"></i></button>
+  <button class="fbtn" onclick="toggleC(event)" aria-label="Open Vela AI chat" title="Open Vela AI chat"><div class="fpulse"></div><i class="ti ti-robot"></i></button>
   <div class="flbl">Vela AI</div>
 </div>
 
