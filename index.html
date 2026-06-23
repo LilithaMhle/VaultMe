@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Dashboard — VaultMe</title>
+<meta name="description" content="VaultMe — your personal achievement vault. Track certificates, projects, skills and showcase your career."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="css/shared.css"/>
+</head>
+<body>
+<nav class="topnav">
+  <a class="logo" href="index.html"><div class="lic"><i class="ti ti-vault"></i></div>VaultMe</a>
+  <div class="tabs">
+    <a class="tab" href="pages/signup.html">Sign up</a>
+    <a class="tab on" href="index.html">Dashboard</a>
+    <a class="tab" href="pages/analytics.html">Analytics</a>
+    <a class="tab" href="pages/upload.html">Upload assets</a>
+    <a class="tab" href="pages/public.html">Public view</a>
+  </div>
+  <div class="tright">
+    <a class="btn btn-sm" id="cv-dl-btn" style="display:none;" download><i class="ti ti-download" style="font-size:11px;"></i> CV</a>
+    <div class="user-avatar-nav" id="navAv"></div>
+  </div>
+</nav>
+
+<div id="ticker-mount"></div>
+
+<div style="display:flex;height:calc(100vh - 88px);overflow:hidden;">
+  <div class="side">
+    <div class="snav">
+      <a class="ni on" href="index.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+      <a class="ni" href="pages/signup.html"><i class="ti ti-user-edit"></i> Edit profile</a>
+      <a class="ni" href="#" onclick="navScrollTo('certs-section');return false;"><i class="ti ti-certificate"></i> Certificates</a>
+      <a class="ni" href="#" onclick="navScrollTo('projects-section');return false;"><i class="ti ti-folder-code"></i> Projects</a>
+      <a class="ni" href="#" onclick="navScrollTo('skills-section');return false;"><i class="ti ti-star"></i> Skills</a>
+      <a class="ni" href="#" onclick="navScrollTo('videos-section');return false;"><i class="ti ti-video"></i> Videos</a>
+      <a class="ni" href="pages/analytics.html"><i class="ti ti-chart-bar"></i> Analytics</a>
+      <a class="ni" href="pages/upload.html"><i class="ti ti-upload"></i> Upload assets</a>
+      <a class="ni" href="pages/public.html"><i class="ti ti-eye"></i> Public view</a>
+    </div>
+    <div class="suser">
+      <div class="suser-av" id="sideAv"></div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t);" id="side-name">Your Name</div>
+      <div style="font-size:10px;color:var(--t2);" id="side-role">Your Role</div></div>
+    </div>
+  </div>
+
+  <div style="flex:1;overflow-y:auto;" id="main-content">
+    <div style="padding:18px;display:flex;flex-direction:column;gap:16px;">
+
+      <!-- HERO: animation + profile info -->
+      <div style="background:var(--c);border:.5px solid var(--bor);border-radius:16px;padding:18px 18px 0;position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-50px;right:-50px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(29,78,216,.12),transparent 70%);pointer-events:none;"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;position:relative;z-index:2;">
+          <div style="flex:1;">
+            <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--t);" id="d-name">Loading...</div>
+            <div style="font-size:12px;color:var(--t2);margin-top:3px;" id="d-sub"></div>
+            <div style="display:flex;gap:5px;flex-wrap:wrap;margin-top:10px;" id="d-tags"></div>
+            <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
+              <a class="btn btnr btn-sm" href="pages/public.html"><i class="ti ti-eye" style="font-size:11px;"></i> Public view</a>
+              <a class="btn btn-sm" href="pages/signup.html"><i class="ti ti-edit" style="font-size:11px;"></i> Edit profile</a>
+              <a class="btn btn-sm" id="cv-hero-btn" style="display:none;" download><i class="ti ti-download" style="font-size:11px;"></i> CV</a>
+            </div>
+          </div>
+        </div>
+        <!-- DRAG ANIMATION — full width, below info -->
+        <div id="anim-mount" style="margin-top:10px;"></div>
+      </div>
+
+      <!-- STATS -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="stats-row"></div>
+
+      <!-- ACHIEVEMENTS SPOTLIGHT -->
+      <div id="ach-section" style="display:none;">
+        <div class="section-title"><i class="ti ti-sparkles" style="font-size:13px;"></i> Standout achievements</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;" id="ach-cards"></div>
+      </div>
+
+      <!-- CERTIFICATES -->
+      <div id="certs-section" style="display:none;">
+        <div class="section-title"><i class="ti ti-certificate" style="font-size:13px;"></i> Certificates</div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;" id="certs-grid"></div>
+      </div>
+
+      <!-- PROJECTS -->
+      <div id="projects-section" style="display:none;">
+        <div class="section-title"><i class="ti ti-folder-code" style="font-size:13px;"></i> Projects</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="projects-grid"></div>
+      </div>
+
+      <!-- SKILLS -->
+      <div id="skills-section" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="ti ti-star"></i> Skills</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;" id="skills-grid"></div>
+        </div>
+      </div>
+
+      <!-- VIDEOS -->
+      <div id="videos-section" style="display:none;">
+        <div class="card">
+          <div class="ch"><div class="ct"><i class="ti ti-video"></i> Video showcase</div>
+            <a class="addb btn btn-sm" href="pages/upload.html" style="font-size:10px;">+ Upload (max 3 min)</a>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;" id="videos-grid"></div>
+        </div>
+      </div>
+
+      <!-- EMPTY STATE -->
+      <div id="empty-state" style="display:none;text-align:center;padding:60px 20px;">
+        <i class="ti ti-vault" style="font-size:48px;color:var(--b3);display:block;margin-bottom:16px;"></i>
+        <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t);margin-bottom:8px;">Your vault is empty</div>
+        <div style="font-size:13px;color:var(--t2);margin-bottom:20px;">Set up your profile to see your achievements, certificates, and projects displayed here.</div>
+        <a class="btn btnr" href="pages/signup.html"><i class="ti ti-user-plus" style="font-size:13px;"></i> Set up my profile</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="js/store.js"></script>
+<script src="js/vela.js"></script>
+<script>
+var COLORS = ['#0a1628','#0d1e3a','#0f2347','#071428','#0c1d38','#091630','#0e2040','#071020'];
+var ICON_COLORS = ['#60a5fa','#c084fc','#86efac','#93c5fd','#67e8f9','#facc15','#93c5fd','#a78bfa'];
+var ICONS = ['ti-certificate','ti-cloud','ti-shield','ti-brain','ti-database','ti-brand-windows','ti-code','ti-star','ti-rocket','ti-sparkles'];
+
+// Scroll the inner content panel to a section by ID.
+// If the section is hidden (no data), show a friendly nudge toast instead.
+function navScrollTo(sectionId) {
+  var el = document.getElementById(sectionId);
+  if (!el) return;
+  if (el.style.display === 'none' || el.style.display === '') {
+    showNavToast(sectionId);
+    return;
+  }
+  var container = document.getElementById('main-content');
+  var offset = el.offsetTop - container.offsetTop - 12;
+  container.scrollTo({ top: offset, behavior: 'smooth' });
+  // Highlight the active nav item
+  document.querySelectorAll('.ni').forEach(function(a){ a.classList.remove('on'); });
+  var map = {'certs-section':'Certificates','projects-section':'Projects','skills-section':'Skills','videos-section':'Videos'};
+  document.querySelectorAll('.ni').forEach(function(a){
+    if (a.textContent.trim().indexOf(map[sectionId]) !== -1) a.classList.add('on');
+  });
+}
+
+function showNavToast(sectionId) {
+  var labels = {'certs-section':'certificates','projects-section':'projects','skills-section':'skills','videos-section':'videos'};
+  var label = labels[sectionId] || 'content';
+  var t = document.getElementById('nav-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'nav-toast';
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--c2);border:.5px solid var(--bor);color:var(--t);font-size:12px;padding:9px 18px;border-radius:9px;z-index:999;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,.4);';
+    document.body.appendChild(t);
+  }
+  t.textContent = 'No ' + label + ' yet — add them in Edit profile';
+  t.style.display = 'block';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.display = 'none'; }, 2500);
+}
+
+window.addEventListener('DOMContentLoaded', function(){
+  var p = VM.load();
+  renderAll(p);
+});
+
+function renderAll(p) {
+  // Nav avatar
+  var navAv = document.getElementById('navAv');
+  if (p.profilePhoto) { navAv.innerHTML = '<img src="'+p.profilePhoto+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'; }
+  else { navAv.textContent = (p.name||'?').charAt(0).toUpperCase(); }
+
+  // Sidebar
+  var sAv = document.getElementById('sideAv');
+  if (p.profilePhoto) { sAv.innerHTML = '<img src="'+p.profilePhoto+'" style="display:block;width:100%;height:100%;object-fit:cover;"/>'; }
+  else { sAv.textContent = (p.name||'?').charAt(0).toUpperCase(); }
+  document.getElementById('side-name').textContent = p.name || 'Your Name';
+  document.getElementById('side-role').textContent = p.role || 'Your Role';
+
+  // CV button
+  if (p.cv) {
+    var cvb = document.getElementById('cv-dl-btn'); cvb.style.display='inline-flex'; cvb.href=p.cv; cvb.download=p.cvName||'CV.pdf';
+    var cvh = document.getElementById('cv-hero-btn'); cvh.style.display='inline-flex'; cvh.href=p.cv; cvh.download=p.cvName||'CV.pdf';
+  }
+
+  // Check if profile is empty
+  var isEmpty = !p.name && !p.achievements.length && !p.certs.length && !p.projects.length && !p.skills.length;
+  if (isEmpty) { document.getElementById('empty-state').style.display='block'; return; }
+
+  // Hero text
+  document.getElementById('d-name').textContent = p.name || 'Welcome to VaultMe';
+  var sub = [p.role, p.location].filter(Boolean).join(' · ');
+  document.getElementById('d-sub').textContent = sub;
+
+  // Tags from top skills + achievements
+  var tagsEl = document.getElementById('d-tags');
+  var tagItems = [];
+  (p.achievements||[]).forEach(function(a){ if(a.label) tagItems.push({icon:'ti-sparkles',txt:a.label}); });
+  (p.skills||[]).slice(0,3).forEach(function(s){ tagItems.push({icon:'ti-code',txt:s.name}); });
+  tagsEl.innerHTML = tagItems.map(function(t){
+    return '<span style="font-size:10px;padding:3px 9px;border-radius:20px;background:var(--b2);color:var(--rl);font-weight:500;display:inline-flex;align-items:center;gap:4px;"><i class="ti '+t.icon+'" style="font-size:10px;"></i>'+esc(t.txt)+'</span>';
+  }).join('');
+
+  // Ticker
+  document.getElementById('ticker-mount').innerHTML = VM.renderTicker(p);
+
+  // Animation
+  document.getElementById('anim-mount').innerHTML = VM.renderDragAnim(p,'');
+
+  // Stats
+  var stats = [
+    {n: p.achievements.length, label:'Achievements', sub:'Standout', icon:'ti-sparkles'},
+    {n: p.certs.length, label:'Certificates', sub:'Verified', icon:'ti-certificate'},
+    {n: p.projects.length, label:'Projects', sub:'Live work', icon:'ti-folder-code'},
+    {n: p.profileStrength+'%', label:'Profile strength', sub: p.profileStrength>=80?'Ready to share':'Keep building', icon:'ti-chart-bar'},
+  ];
+  document.getElementById('stats-row').innerHTML = stats.map(function(s){
+    return '<div class="card" style="padding:12px 14px;"><div style="font-family:Syne,sans-serif;font-size:22px;font-weight:800;color:var(--t);">'+s.n+'</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">'+s.label+'</div><div style="font-size:10px;color:var(--rm);margin-top:3px;display:flex;align-items:center;gap:3px;"><i class="ti '+s.icon+'" style="font-size:9px;"></i>'+s.sub+'</div></div>';
+  }).join('');
+
+  // Achievements section
+  if (p.achievements && p.achievements.length) {
+    document.getElementById('ach-section').style.display='block';
+    document.getElementById('ach-cards').innerHTML = p.achievements.map(function(a){
+      var img = a.photo ? '<img src="'+a.photo+'" style="width:100%;height:160px;object-fit:cover;object-position:top;border-radius:10px;margin-bottom:10px;"/>' : '<div style="width:100%;height:100px;background:var(--b2);border-radius:10px;margin-bottom:10px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-photo" style="font-size:28px;color:var(--b3);"></i></div>';
+      return '<div class="card" style="border-color:var(--rm);position:relative;overflow:hidden;">'+img+'<div style="position:absolute;top:8px;left:8px;background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i>'+esc(a.label)+'</div><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--t);">'+esc(a.label)+'</div><div style="font-size:11px;color:var(--t2);margin-top:4px;line-height:1.55;">'+esc(a.spotlightText)+'</div></div>';
+    }).join('');
+  }
+
+  // Certificates
+  if (p.certs && p.certs.length) {
+    document.getElementById('certs-section').style.display='block';
+    document.getElementById('certs-grid').innerHTML = p.certs.map(function(c,i){
+      var bg=COLORS[i%COLORS.length], ic=ICON_COLORS[i%ICON_COLORS.length], ico=ICONS[i%ICONS.length];
+      return '<div class="cert-card"><div style="width:40px;height:40px;border-radius:9px;background:'+bg+';display:flex;align-items:center;justify-content:center;"><i class="ti '+ico+'" style="font-size:20px;color:'+ic+';"></i></div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(c.name)+'</div><div style="font-size:10px;color:var(--t2);">'+esc(c.org)+'</div><div style="font-size:10px;color:var(--rm);background:var(--b2);padding:2px 7px;border-radius:20px;align-self:flex-start;font-weight:600;">'+(c.year||'')+'</div></div>';
+    }).join('');
+  }
+
+  // Projects
+  if (p.projects && p.projects.length) {
+    document.getElementById('projects-section').style.display='block';
+    document.getElementById('projects-grid').innerHTML = p.projects.map(function(pr,i){
+      var bg=COLORS[i%COLORS.length], ic=ICON_COLORS[i%ICON_COLORS.length];
+      var pills=(pr.tags||[]).map(function(t){return '<span style="font-size:9px;padding:2px 6px;border-radius:20px;background:var(--b2);color:var(--rl);">'+esc(t)+'</span>';}).join('');
+      return '<div class="proj-card"><div style="width:36px;height:36px;border-radius:8px;background:'+bg+';display:flex;align-items:center;justify-content:center;margin-bottom:8px;"><i class="ti ti-code" style="font-size:18px;color:'+ic+';"></i></div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(pr.name)+'</div><div style="font-size:10px;color:var(--t2);margin-top:3px;line-height:1.5;">'+esc(pr.desc||'')+'</div><div style="display:flex;gap:3px;margin-top:6px;flex-wrap:wrap;">'+pills+'</div>'+(pr.url?'<a href="'+esc(pr.url)+'" target="_blank" class="btn btn-sm" style="margin-top:8px;font-size:10px;padding:4px 8px;"><i class="ti ti-external-link" style="font-size:10px;"></i> Live demo</a>':'')+'</div>';
+    }).join('');
+  }
+
+  // Skills
+  if (p.skills && p.skills.length) {
+    document.getElementById('skills-section').style.display='block';
+    document.getElementById('skills-grid').innerHTML = p.skills.map(function(s){
+      return '<div class="skill-bar-row"><div class="skill-bar-lbl"><span>'+esc(s.name)+'</span><span>'+s.pct+'%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:'+s.pct+'%;"></div></div></div>';
+    }).join('');
+  }
+
+  // Videos
+  if (p.videos && p.videos.length) {
+    document.getElementById('videos-section').style.display='block';
+    document.getElementById('videos-grid').innerHTML = p.videos.map(function(v,i){
+      var mediaHtml = v.src
+        ? '<video src="'+v.src+'" controls style="width:100%;height:110px;object-fit:cover;border-radius:10px 10px 0 0;display:block;background:#000;"></video>'
+        : '<div style="height:110px;background:linear-gradient(145deg,#0a1628,#0d1a30);display:flex;align-items:center;justify-content:center;border-radius:10px 10px 0 0;"><i class="ti ti-video-off" style="font-size:22px;color:var(--b3);"></i></div>';
+      return '<div style="background:var(--c2);border:.5px solid var(--bor);border-radius:12px;overflow:hidden;">'+mediaHtml+'<div style="padding:9px 11px;"><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:10px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
+    }).join('');
+    // add upload slot
+    document.getElementById('videos-grid').innerHTML += '<div style="background:var(--c2);border:1.5px dashed var(--bor);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;cursor:pointer;min-height:110px;" onclick="window.location.href=\'pages/upload.html\'"><i class="ti ti-cloud-upload" style="font-size:20px;color:var(--rm);"></i><div style="font-size:10px;color:var(--t2);">Upload video</div><div style="font-size:9px;color:var(--b3);">max 3 min</div></div>';
+  }
+}
+
+function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+
+<!-- VELA CHATBOT — direct child of body, after all other elements and scripts,
+     so no stacking context from transforms, filters, or overflow:hidden ancestors
+     can interfere with click events on the button. -->
+<div class="cfab" id="cfab">
+  <div class="cwin" id="cwin">
+    <div class="cwh">
+      <div class="cwav"><i class="ti ti-robot"></i></div>
+      <div><div class="cwname">Vela</div><div class="cwst"><div class="cwdot"></div> Career AI &middot; online</div></div>
+      <button class="cwx" onclick="toggleC(event)" aria-label="Close chat" title="Close chat">&#215;</button>
+    </div>
+    <div class="cwmsgs" id="cwm">
+      <div class="cm ai" id="vela-greeting">Hi! I'm Vela, your Career AI. Loading your profile...</div>
+    </div>
+    <div class="cwqs" id="cwqs">
+      <div class="cwq-title">Frequently asked questions</div>
+      <div class="cq" data-key="profile" onclick="askV('profile')">How do I add or edit my profile?</div>
+      <div class="cq" data-key="cv" onclick="askV('cv')">How do I upload my CV?</div>
+      <div class="cq" data-key="certificates" onclick="askV('certificates')">How do I add certificates?</div>
+      <div class="cq" data-key="videos" onclick="askV('videos')">How do I upload videos?</div>
+      <div class="cq" data-key="publicProfile" onclick="askV('publicProfile')">How can I share my public profile?</div>
+      <div class="cq" data-key="profileStrength" onclick="askV('profileStrength')">What does profile strength mean?</div>
+      <div class="cq" data-key="analytics" onclick="askV('analytics')">How do I view my analytics?</div>
+      <div class="cq" data-key="achievements" onclick="askV('achievements')">How do achievements work?</div>
+      <div class="cq" data-key="support" onclick="askV('support')">How is my data stored and protected?</div>
+    </div>
+    <div class="cwinp">
+      <input type="text" id="cwinput" placeholder="Ask Vela anything..." onkeydown="if(event.key==='Enter')sendV();"/>
+      <button class="cwsend" onclick="sendV()" aria-label="Send message" title="Send message"><i class="ti ti-send" style="font-size:12px;"></i></button>
+    </div>
+  </div>
+  <button class="fbtn" onclick="toggleC(event)" aria-label="Open Vela AI chat" title="Open Vela AI chat"><div class="fpulse"></div><i class="ti ti-robot"></i></button>
+  <div class="flbl">Vela AI</div>
+</div>
+</body></html>
