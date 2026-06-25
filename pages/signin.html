@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sign In — VaultMe</title>
+<meta name="description" content="Sign in to VaultMe with email and password."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231d4ed8'/><text y='.9em' font-size='80'>🔐</text></svg>"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="../css/shared.css"/>
+<style>
+  .login-panel { max-width:420px; margin:0 auto; }
+  .login-panel h1 { margin:0 0 10px; font-size:26px; }
+  .login-panel p { margin:0 0 20px; color:var(--t2); font-size:14px; }
+  .fg { margin-bottom:16px; }
+  .fi { width:100%; }
+  .actions { display:flex; justify-content:space-between; gap:10px; align-items:center; margin-top:18px; }
+  .actions a { color:var(--rm); text-decoration:none; font-size:13px; }
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="logo" href="../index.html"><div class="lic"><i class="ti ti-vault"></i></div>VaultMe</a>
+  <div class="tabs">
+    <a class="tab on" href="signin.html">Sign in</a>
+    <a class="tab" href="signup.html">Sign up</a>
+  </div>
+</nav>
+
+<div style="display:flex;align-items:center;justify-content:center;min-height:calc(100vh - 52px);padding:30px 16px;background:radial-gradient(ellipse at 60% 40%,#0a1628 0%,var(--bg) 70%);">
+  <div class="login-panel" style="background:var(--c);border:.5px solid var(--bor);border-radius:18px;padding:32px 28px;">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;">
+      <div style="width:44px;height:44px;border-radius:11px;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;"><i class="ti ti-lock" style="font-size:22px;color:var(--rl);"></i></div>
+      <div>
+        <h1 style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:#fff;margin:0;">Sign in to VaultMe</h1>
+        <p style="margin:6px 0 0;">Use your email and password to continue.</p>
+      </div>
+    </div>
+
+    <div class="fg"><label class="fl">Email</label><input class="fi" id="signin-email" type="email" placeholder="you@email.com"/></div>
+    <div class="fg"><label class="fl">Password</label><input class="fi" id="signin-password" type="password" placeholder="Enter password"/></div>
+    <button class="btn btnr" id="signin-button" style="width:100%;" onclick="signIn();">Sign in</button>
+    <div class="actions">
+      <a href="javascript:void(0);" onclick="resetPassword()">Forgot password?</a>
+      <a href="javascript:void(0);" onclick="createAccount()">Create an account</a>
+    </div>
+    <div id="signin-message" style="margin-top:18px;color:var(--rm);font-size:13px;display:none;"></div>
+  </div>
+</div>
+
+<script src="../js/store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script>
+  async function signIn(){
+    var email = document.getElementById('signin-email').value.trim();
+    var password = document.getElementById('signin-password').value;
+    var msg = document.getElementById('signin-message');
+    msg.style.display = 'none';
+    msg.style.color = 'var(--rm)';
+    if (!email || !password) {
+      msg.textContent = 'Email and password are required.';
+      msg.style.display = 'block';
+      return;
+    }
+    var btn = document.getElementById('signin-button');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = 'Signing in...';
+    }
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) {
+        msg.textContent = error.message || 'Sign in failed.';
+        msg.style.display = 'block';
+        return;
+      }
+
+      const draft = localStorage.getItem('vaultme_signup_draft');
+      if (draft) {
+        try {
+          const profile = JSON.parse(draft);
+          await VM.save(profile);
+          localStorage.removeItem('vaultme_signup_draft');
+        } catch (saveErr) {
+          console.error('Failed to save signup draft after login', saveErr);
+        }
+      }
+
+      window.location.href = '../index.html';
+    } catch (err) {
+      msg.textContent = err.message || 'Sign in failed.';
+      msg.style.display = 'block';
+      console.error(err);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = 'Sign in';
+      }
+    }
+  }
+
+  async function resetPassword() {
+    var email = document.getElementById('signin-email').value.trim();
+    var msg = document.getElementById('signin-message');
+    msg.style.display = 'none';
+    msg.style.color = 'var(--rm)';
+
+    if (!email) {
+      msg.textContent = 'Enter your email address to reset your password.';
+      msg.style.display = 'block';
+      return;
+    }
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: location.origin + '/pages/signin.html'
+      });
+      if (error) {
+        msg.textContent = error.message || 'Could not send reset email.';
+        msg.style.display = 'block';
+        return;
+      }
+      msg.style.color = 'var(--rl)';
+      msg.textContent = 'Password reset email sent. Check your inbox.';
+      msg.style.display = 'block';
+    } catch (err) {
+      msg.textContent = err.message || 'Could not send reset email.';
+      msg.style.display = 'block';
+      console.error(err);
+    }
+  }
+
+  async function createAccount() {
+    try {
+      const { data } = await supabase.auth.getUser();
+      if (data && data.user) {
+        await supabase.auth.signOut();
+      }
+    } catch (err) {
+      console.error('Sign out before signup failed', err);
+    }
+    localStorage.removeItem('vaultme_signup_draft');
+    window.location.href = 'signup.html?new=1';
+  }
+
+  async function checkSession(){
+    try {
+      const { data } = await supabase.auth.getUser();
+      if (data && data.user) {
+        window.location.href = '../index.html';
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  checkSession();
+</script>
+</body>
+</html>

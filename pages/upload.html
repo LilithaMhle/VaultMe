@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Upload Assets — VaultMe</title>
+<meta name="description" content="Upload and manage your VaultMe assets — CV, photos and videos."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="../css/shared.css"/>
+</head><body>
+<nav class="topnav">
+  <a class="logo" href="../index.html"><div class="lic"><i class="ti ti-vault"></i></div>VaultMe</a>
+  <div class="tabs">
+    <a class="tab" href="signup.html">Sign up</a>
+    <a class="tab" href="../index.html">Dashboard</a>
+    <a class="tab" href="analytics.html">Analytics</a>
+    <a class="tab on" href="upload.html">Upload assets</a>
+    <a class="tab" href="public.html">View your profile</a>
+  </div>
+  <div class="tright">
+    <button class="btn btn-sm" onclick="logout()" style="margin-right:8px;">Logout</button>
+    <div class="user-avatar-nav" id="navAv"></div>
+  </div>
+</nav>
+<div id="ticker-mount"></div>
+<div style="display:flex;height:calc(100vh - 88px);overflow:hidden;">
+  <div class="side">
+    <div class="snav">
+      <a class="ni" href="../index.html"><i class="ti ti-layout-dashboard"></i> Dashboard</a>
+      <a class="ni" href="signup.html"><i class="ti ti-user-edit"></i> Edit profile</a>
+      <a class="ni" href="analytics.html"><i class="ti ti-chart-bar"></i> Analytics</a>
+      <a class="ni on"><i class="ti ti-upload"></i> Upload assets</a>
+      <a class="ni" href="public.html"><i class="ti ti-eye"></i> View your profile</a>
+    </div>
+    <div class="suser">
+      <div class="suser-av" id="sideAv"></div>
+      <div><div style="font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--t);" id="side-name">Your Name</div>
+      <div style="font-size:10px;color:var(--t2);" id="side-role">Your Role</div></div>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:16px;">
+    <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--t);display:flex;align-items:center;gap:7px;"><i class="ti ti-upload" style="color:var(--rm);font-size:17px;"></i> Upload &amp; manage assets</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;">
+
+      <!-- CV -->
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="ti ti-file-cv"></i> CV / R&eacute;sum&eacute;</div></div>
+        <div class="upload-zone" onclick="document.getElementById('inp-cv').click()"><i class="ti ti-cloud-upload"></i><span>Upload or replace CV</span><small>PDF &middot; max 10MB</small></div>
+        <input type="file" id="inp-cv" accept=".pdf" style="display:none" onchange="handleCV(this)"/>
+        <div id="cv-info" style="margin-top:10px;display:none;background:var(--bg2);border:.5px solid var(--bor);border-radius:8px;padding:9px 12px;display:flex;align-items:center;gap:8px;">
+          <i class="ti ti-file-type-pdf" style="font-size:18px;color:var(--rm);"></i>
+          <div style="flex:1;font-size:12px;color:var(--t);" id="cv-fname">No file</div>
+          <a id="cv-dl" class="btn btn-sm" style="font-size:10px;" download><i class="ti ti-download" style="font-size:10px;"></i></a>
+        </div>
+      </div>
+
+      <!-- Profile photo -->
+      <div class="card">
+        <div class="ch"><div class="ct"><i class="ti ti-user-circle"></i> Profile photo</div></div>
+        <div class="upload-zone" onclick="document.getElementById('inp-photo').click()"><i class="ti ti-photo"></i><span>Upload profile photo</span><small>JPG, PNG &middot; max 5MB</small></div>
+        <input type="file" id="inp-photo" accept="image/*" style="display:none" onchange="handlePhoto(this)"/>
+        <img id="photo-preview" style="width:100%;height:80px;object-fit:cover;object-position:top;border-radius:8px;margin-top:10px;display:none;"/>
+      </div>
+
+      <!-- Achievement photos -->
+      <div class="card" style="grid-column:1/-1;">
+        <div class="ch"><div class="ct"><i class="ti ti-sparkles"></i> Achievement photos</div><a class="addb btn btn-sm" href="signup.html?step=1" style="font-size:10px;">Edit achievements</a></div>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:12px;">Update the photos used in the dragging animation. Each achievement can have one photo.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="ach-upload-grid"></div>
+      </div>
+
+      <!-- Videos -->
+      <div class="card" style="grid-column:1/-1;">
+        <div class="ch">
+          <div class="ct"><i class="ti ti-video"></i> Videos</div>
+          <span id="vid-count-badge" style="font-size:10px;color:var(--t2);margin-left:auto;margin-right:10px;"></span>
+        </div>
+        <div style="font-size:11px;color:var(--rm);margin-bottom:10px;display:flex;align-items:center;gap:4px;font-weight:500;">
+          <i class="ti ti-info-circle" style="font-size:11px;"></i>
+          Max 5 minutes per video &middot; MP4, MOV &middot; max 100MB each &middot; up to 3 videos
+        </div>
+        <div id="vid-list" style="display:flex;flex-direction:column;gap:6px;margin-bottom:12px;"></div>
+
+        <!-- Upload zone — hidden when at limit -->
+        <div id="vid-upload-area">
+          <div class="upload-zone" onclick="document.getElementById('inp-vid').click()">
+            <i class="ti ti-video-plus" style="font-size:22px;"></i>
+            <span>Upload a video from your gallery or files</span>
+            <small>MP4, MOV &middot; max 100MB &middot; max 5 min</small>
+          </div>
+          <!-- accept="video/*" lets mobile open the gallery picker; no capture attr so user can choose gallery or files -->
+          <input type="file" id="inp-vid" accept="video/*" style="display:none" onchange="handleVid(this)"/>
+        </div>
+
+        <!-- At-limit message — shown when 3 videos uploaded -->
+        <div id="vid-limit-msg" style="display:none;background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:14px 16px;text-align:center;">
+          <i class="ti ti-lock" style="font-size:20px;color:var(--b3);display:block;margin-bottom:6px;"></i>
+          <div style="font-size:12px;color:var(--t);font-weight:600;">Maximum 3 videos reached</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:3px;">Remove a video below to upload a new one.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--r);color:#fff;font-size:13px;padding:10px 22px;border-radius:30px;z-index:9999;">&#10003; Saved!</div>
+
+<script src="../js/store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script>
+var MAX_VIDEOS = 3;
+var MAX_VID_SECS = 300; // 5 minutes
+
+var profile = null;
+
+window.addEventListener('DOMContentLoaded', async function(){
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (!data || !data.session) {
+      location.href = 'signin.html';
+      return;
+    }
+  } catch (e) {
+    console.error(e);
+    location.href = 'signin.html';
+    return;
+  }
+
+  profile = await VM.load();
+  initNav();
+  document.getElementById('ticker-mount').innerHTML = VM.renderTicker(profile);
+  renderAchUpload();
+  renderVidList();
+  if (profile.cv) {
+    var ci = document.getElementById('cv-info'); ci.style.display = 'flex';
+    document.getElementById('cv-fname').textContent = profile.cvName || 'CV uploaded';
+    var dl = document.getElementById('cv-dl'); dl.href = profile.cv; dl.download = profile.cvName || 'CV.pdf';
+  }
+  if (profile.profilePhoto) {
+    var pp = document.getElementById('photo-preview'); pp.src = profile.profilePhoto; pp.style.display = 'block';
+  }
+});
+
+function initNav() {
+  var nav = document.getElementById('navAv');
+  if (profile.profilePhoto) nav.innerHTML = '<img src="'+profile.profilePhoto+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  else nav.textContent = (profile.name||'?').charAt(0).toUpperCase();
+  var sa = document.getElementById('sideAv');
+  if (profile.profilePhoto) sa.innerHTML = '<img src="'+profile.profilePhoto+'" style="display:block;width:100%;height:100%;object-fit:cover;"/>';
+  else sa.textContent = (profile.name||'?').charAt(0).toUpperCase();
+  document.getElementById('side-name').textContent = profile.name || 'Your Name';
+  document.getElementById('side-role').textContent = profile.role || 'Your Role';
+}
+
+function renderAchUpload() {
+  var grid = document.getElementById('ach-upload-grid');
+  if (!profile.achievements || !profile.achievements.length) {
+    grid.innerHTML = '<div style="font-size:12px;color:var(--b3);padding:10px;">No achievements set yet. <a href="signup.html" style="color:var(--rm);">Add achievements first</a>.</div>';
+    return;
+  }
+  grid.innerHTML = profile.achievements.map(function(a, i){
+    var imgHtml = a.photo ? '<img src="'+a.photo+'" style="width:100%;height:100px;object-fit:cover;object-position:top;border-radius:8px;margin-bottom:8px;display:block;"/>' : '';
+    var zoneId = 'inp-ach' + i;
+    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:12px;">' +
+      '<div style="font-size:11px;font-weight:600;color:var(--rm);margin-bottom:8px;"><i class="ti ti-sparkles" style="font-size:11px;margin-right:3px;"></i>Achievement '+(i+1)+': '+esc(a.label)+'</div>' +
+      imgHtml +
+      '<div class="upload-zone" style="padding:10px;" onclick="document.getElementById(\''+zoneId+'\').click()">' +
+      '<i class="ti ti-photo" style="font-size:18px;"></i><span>'+(a.photo?'Replace photo':'Upload photo')+'</span></div>' +
+      '<input type="file" id="'+zoneId+'" accept="image/*" style="display:none" onchange="handleAchPhoto(this,'+i+')"/>' +
+      '</div>';
+  }).join('');
+}
+
+function renderVidList() {
+  var videos = profile.videos || [];
+  var count = videos.length;
+  var atLimit = count >= MAX_VIDEOS;
+
+  // Count badge
+  var badge = document.getElementById('vid-count-badge');
+  badge.textContent = count + ' / ' + MAX_VIDEOS + ' videos';
+
+  // Toggle upload zone vs limit message
+  document.getElementById('vid-upload-area').style.display = atLimit ? 'none' : 'block';
+  document.getElementById('vid-limit-msg').style.display = atLimit ? 'block' : 'none';
+
+  // Render video list
+  var el = document.getElementById('vid-list');
+  if (!videos.length) {
+    el.innerHTML = '<div style="font-size:12px;color:var(--b3);padding:6px 0;">No videos uploaded yet.</div>';
+    return;
+  }
+  el.innerHTML = videos.map(function(v, i){
+    var playerHtml = v.src
+      ? '<video src="'+v.src+'" controls style="width:100%;height:120px;border-radius:8px;margin-top:8px;background:#000;display:block;"></video>'
+      : '';
+    return '<div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:10px 12px;">' +
+      '<div style="display:flex;align-items:center;gap:8px;">' +
+      '<i class="ti ti-video" style="color:var(--rm);font-size:16px;flex-shrink:0;"></i>' +
+      '<div style="flex:1;">' +
+      '<div style="font-size:12px;color:var(--t);font-weight:600;">'+esc(v.name)+'</div>' +
+      '<div style="font-size:10px;color:var(--t2);margin-top:1px;">'+(v.duration||'')+'</div>' +
+      '</div>' +
+      '<button onclick="removeVid('+i+')" aria-label="Remove video" title="Remove video" style="background:transparent;border:none;color:var(--rm);cursor:pointer;padding:4px;"><i class="ti ti-trash" style="font-size:14px;"></i></button>' +
+      '</div>' +
+      playerHtml +
+      '</div>';
+  }).join('');
+}
+
+async function handleCV(inp) {
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 10);
+    profile.cv = b64; profile.cvName = inp.files[0].name; VM.save(profile);
+    var ci = document.getElementById('cv-info'); ci.style.display = 'flex';
+    document.getElementById('cv-fname').textContent = inp.files[0].name;
+    var dl = document.getElementById('cv-dl'); dl.href = b64; dl.download = inp.files[0].name;
+    toast();
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('CV must be under 10 MB. Please compress the PDF and try again.');
+  }
+}
+
+async function handlePhoto(inp) {
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 5);
+    profile.profilePhoto = b64; VM.save(profile);
+    var pp = document.getElementById('photo-preview'); pp.src = b64; pp.style.display = 'block';
+    initNav(); toast();
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('Profile photo must be under 5 MB. Please resize the image and try again.');
+  }
+}
+
+async function handleAchPhoto(inp, idx) {
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 5);
+    if (!profile.achievements[idx]) return;
+    profile.achievements[idx].photo = b64; VM.save(profile);
+    renderAchUpload(); toast();
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('Achievement photo must be under 5 MB. Please resize the image and try again.');
+  }
+}
+
+async function handleVid(inp) {
+  if (!inp.files[0]) return;
+  var file = inp.files[0];
+
+  // Re-check count limit in case of race
+  if ((profile.videos || []).length >= MAX_VIDEOS) {
+    alert('You already have ' + MAX_VIDEOS + ' videos. Remove one before uploading a new one.');
+    inp.value = ''; return;
+  }
+
+  // 100MB size limit
+  if (file.size > 100 * 1024 * 1024) {
+    alert('Video must be under 100 MB. Please compress it and try again.');
+    inp.value = ''; return;
+  }
+
+  var name = file.name.replace(/\.[^.]+$/, '');
+
+  // Detect duration before reading the full file into base64
+  var url = URL.createObjectURL(file);
+  var tmpVid = document.createElement('video');
+  tmpVid.preload = 'metadata';
+
+  tmpVid.onloadedmetadata = async function() {
+    URL.revokeObjectURL(url);
+    var secs = Math.round(tmpVid.duration);
+    var mins = Math.floor(secs / 60);
+    var secsRem = secs % 60;
+    var dur = mins + ':' + (secsRem < 10 ? '0' : '') + secsRem;
+
+    if (secs > MAX_VID_SECS) {
+      var limitMins = Math.floor(MAX_VID_SECS / 60);
+      alert('Video must be ' + limitMins + ' minutes or less (this one is ' + dur + '). Please trim it and try again.');
+      inp.value = ''; return;
+    }
+
+    try {
+      var b64 = await VM.readFile(file, 100);
+      profile.videos = profile.videos || [];
+      profile.videos.push({ name: name, duration: dur, src: b64 });
+      VM.save(profile);
+      renderVidList();
+      toast();
+    } catch(e) {
+      if (e && e.message === 'FILE_TOO_LARGE') alert('Video must be under 100 MB.');
+    }
+    inp.value = '';
+  };
+
+  tmpVid.onerror = function() {
+    URL.revokeObjectURL(url);
+    alert('Could not read this video file. Please try a different file (MP4 or MOV recommended).');
+    inp.value = '';
+  };
+
+  tmpVid.src = url;
+}
+
+function removeVid(i) {
+  profile.videos.splice(i, 1);
+  VM.save(profile);
+  renderVidList();
+  toast();
+}
+
+function toast() {
+  var t = document.getElementById('toast');
+  t.style.display = 'block';
+  setTimeout(function(){ t.style.display = 'none'; }, 1800);
+}
+
+function esc(s) { return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body></html>

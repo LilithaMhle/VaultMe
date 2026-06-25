@@ -1,0 +1,736 @@
+<!-- GIT TEST -->
+
+<!-- TEST CHANGE 24 JUNE 2026 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Sign Up — VaultMe</title>
+<meta name="description" content="Build your VaultMe profile — organise your achievements, certificates, skills and projects."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="../css/shared.css"/>
+<style>
+.step-wrap{display:none;}.step-wrap.active{display:block;}
+.step-bar{display:flex;border-bottom:.5px solid var(--bor);}
+.step-pill{flex:1;padding:10px 4px;text-align:center;font-size:11px;color:var(--t2);border-right:.5px solid var(--bor);display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;}
+.step-pill:last-child{border-right:none;}
+.step-pill.done{background:var(--b2);color:var(--rl);}
+.step-pill.cur{background:var(--b3);color:#fff;font-weight:600;}
+.ach-block{background:var(--bg2);border:.5px solid var(--bor);border-radius:12px;padding:14px;margin-bottom:12px;}
+.ach-block h4{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--rm);margin-bottom:10px;}
+.preview-photo{width:100%;height:130px;border-radius:8px;object-fit:cover;object-position:top;margin-top:8px;border:.5px solid var(--bor);display:none;}
+.pill-tag{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:3px 8px;border-radius:20px;background:var(--b2);color:var(--rl);margin:2px;}
+.list-item{background:var(--bg2);border:.5px solid var(--bor);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.rm-btn{background:transparent;border:none;color:var(--rm);cursor:pointer;font-size:13px;margin-left:auto;}
+.vid-card{background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.vid-card video{width:100%;height:100px;object-fit:cover;display:block;background:#000;}
+.vid-card-body{padding:8px 10px;display:flex;align-items:center;gap:8px;}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a class="logo" href="../index.html"><div class="lic"><i class="ti ti-vault"></i></div>VaultMe</a>
+  <div class="tabs">
+    <a class="tab on" href="signup.html">Sign up</a>
+    <a class="tab" href="signin.html">Sign in</a>
+  </div>
+  <div class="tright" style="display:flex;align-items:center;gap:10px;">
+    <a class="btn btn-sm" href="../index.html" style="padding:8px 12px;">← Back</a>
+    <div class="user-avatar-nav" id="navAv"></div>
+  </div>
+</nav>
+
+<div style="display:flex;align-items:flex-start;justify-content:center;min-height:calc(100vh - 52px);padding:30px 16px;background:radial-gradient(ellipse at 60% 40%,#0a1628 0%,var(--bg) 70%);">
+<div style="width:640px;">
+<div style="background:var(--c);border:.5px solid var(--bor);border-radius:18px;overflow:hidden;">
+
+  <div style="background:linear-gradient(135deg,var(--r),var(--b3));padding:22px 26px;display:flex;align-items:center;gap:12px;">
+    <div style="width:44px;height:44px;border-radius:11px;background:rgba(0,0,0,.3);display:flex;align-items:center;justify-content:center;"><i class="ti ti-vault" style="font-size:22px;color:var(--rl);"></i></div>
+    <div><div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:#fff;">Build your VaultMe profile</div><div style="font-size:12px;color:var(--rl);margin-top:2px;">Everything you've achieved, organised in one place</div></div>
+  </div>
+
+  <div class="step-bar">
+    <div class="step-pill cur" id="sp0" onclick="goStep(0)"><i class="ti ti-user"></i> Identity</div>
+    <div class="step-pill" id="sp1" onclick="goStep(1)"><i class="ti ti-sparkles"></i> Achievements</div>
+    <div class="step-pill" id="sp2" onclick="goStep(2)"><i class="ti ti-certificate"></i> Certificates</div>
+    <div class="step-pill" id="sp3" onclick="goStep(3)"><i class="ti ti-star"></i> Skills &amp; Projects</div>
+    <div class="step-pill" id="sp4" onclick="goStep(4)"><i class="ti ti-upload"></i> Assets</div>
+  </div>
+
+  <div style="padding:22px 26px;">
+
+    <!-- STEP 0: IDENTITY -->
+    <div class="step-wrap active" id="step0">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div class="fg"><label class="fl">Full name *</label><input class="fi" id="f-name" placeholder="Your full name"/></div>
+        <div class="fg"><label class="fl">Role / field *</label><input class="fi" id="f-role" placeholder="e.g. Cloud Developer, UX Designer"/></div>
+        <div class="fg"><label class="fl">Location</label><input class="fi" id="f-location" placeholder="City, Country"/></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" id="f-email" type="email" placeholder="you@email.com"/></div>
+        <div class="fg" id="password-row"><label class="fl">Password *</label><input class="fi" id="f-password" type="password" placeholder="Create a strong password" oninput="checkPasswordRequirements()"/></div>
+        <div class="fg" id="password-confirm-row"><label class="fl">Confirm password *</label><input class="fi" id="f-password-confirm" type="password" placeholder="Confirm your password"/></div>
+        <div class="fg" id="password-help" style="background:var(--bg2);border:.5px solid var(--bor);border-radius:8px;padding:12px;margin-top:8px;">
+          <div style="font-size:11px;font-weight:600;color:var(--t);margin-bottom:8px;">Password requirements:</div>
+          <div style="display:flex;flex-direction:column;gap:6px;font-size:10px;">
+            <div id="req-length" style="display:flex;align-items:center;gap:6px;color:var(--t2);">
+              <i class="ti ti-circle-x" style="font-size:12px;color:var(--b3);"></i>
+              <span>At least 8 characters</span>
+            </div>
+            <div id="req-upper" style="display:flex;align-items:center;gap:6px;color:var(--t2);">
+              <i class="ti ti-circle-x" style="font-size:12px;color:var(--b3);"></i>
+              <span>One uppercase letter (A-Z)</span>
+            </div>
+            <div id="req-number" style="display:flex;align-items:center;gap:6px;color:var(--t2);">
+              <i class="ti ti-circle-x" style="font-size:12px;color:var(--b3);"></i>
+              <span>One number (0-9)</span>
+            </div>
+            <div id="req-special" style="display:flex;align-items:center;gap:6px;color:var(--t2);">
+              <i class="ti ti-circle-x" style="font-size:12px;color:var(--b3);"></i>
+              <span>One special character (!@#$%^&*)</span>
+            </div>
+          </div>
+        </div>
+        <div class="fg"><label class="fl">LinkedIn URL</label><input class="fi" id="f-linkedin" placeholder="linkedin.com/in/your-profile"/></div>
+        <div class="fg"><label class="fl">GitHub URL</label><input class="fi" id="f-github" placeholder="github.com/YourHandle"/></div>
+      </div>
+      <div class="fg"><label class="fl">Bio / About me</label><textarea class="fi" id="f-bio" rows="3" style="resize:none;" placeholder="Tell the world about yourself, your goals, and what drives you..."></textarea></div>
+      <div style="font-size:11px;color:var(--t2);margin-top:-8px;margin-bottom:14px;">Password must be at least 8 characters, contain 1 uppercase letter, 1 number, and 1 symbol.</div>
+      <div class="fg">
+        <label class="fl">Profile photo</label>
+        <div class="upload-zone" onclick="document.getElementById('inp-photo').click()"><i class="ti ti-user-circle"></i><span>Upload your profile photo</span><small>JPG, PNG &middot; max 5MB</small></div>
+        <input type="file" id="inp-photo" accept="image/*" style="display:none" onchange="handlePhoto(this)"/>
+        <img id="preview-photo" class="preview-photo"/>
+      </div>
+    </div>
+
+    <!-- STEP 1: ACHIEVEMENTS -->
+    <div class="step-wrap" id="step1">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:16px;line-height:1.6;background:var(--bg2);padding:12px;border-radius:8px;border:.5px solid var(--bor);">
+        <strong style="color:var(--rm);">How this works:</strong> Add up to 2 standout achievements. Each achievement has a photo that will be dragged by the animation on your dashboard and public view. The photos flip between each other while being dragged. Your spotlight sentence is what scrolls in the AI Spotlight ticker at the top of the screen.
+      </div>
+      <div class="ach-block">
+        <h4><i class="ti ti-trophy" style="font-size:12px;margin-right:4px;"></i> Achievement 1 &nbsp;<span style="font-size:10px;color:var(--b3);font-weight:400;">— primary spotlight</span></h4>
+        <div class="fg"><label class="fl">Achievement label * <small style="color:var(--b3);">(appears as badge on your photo)</small></label><input class="fi" id="ach1-label" placeholder="e.g. AWS Summit JHB 2025" oninput="previewBadge(1)"/></div>
+        <div id="badge1-preview" style="margin-bottom:10px;display:none;"><span style="background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i><span id="badge1-text"></span></span><small style="color:var(--b3);font-size:10px;margin-left:8px;">preview of badge</small></div>
+        <div class="fg"><label class="fl">AI Spotlight sentence * <small style="color:var(--b3);">(scrolls in the ticker alongside the animation)</small></label><input class="fi" id="ach1-spot" placeholder="e.g. AWS Summit Johannesburg 2025 attendee — rare cloud event credential"/></div>
+        <div class="fg">
+          <label class="fl">Achievement photo *</label>
+          <div class="upload-zone" onclick="document.getElementById('inp-ach1').click()"><i class="ti ti-photo"></i><span>Upload the photo for this achievement</span><small>This photo will be dragged by the animation</small></div>
+          <input type="file" id="inp-ach1" accept="image/*" style="display:none" onchange="handleAchPhoto(this,1)"/>
+          <img id="prev-ach1" class="preview-photo"/>
+        </div>
+      </div>
+      <div class="ach-block">
+        <h4><i class="ti ti-medal" style="font-size:12px;margin-right:4px;"></i> Achievement 2 &nbsp;<span style="font-size:10px;color:var(--b3);font-weight:400;">— optional, animation flips to this</span></h4>
+        <div class="fg"><label class="fl">Achievement label</label><input class="fi" id="ach2-label" placeholder="e.g. 1st Place MUT Competition 2024" oninput="previewBadge(2)"/></div>
+        <div id="badge2-preview" style="margin-bottom:10px;display:none;"><span style="background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:4px 10px;border-radius:20px;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i><span id="badge2-text"></span></span></div>
+        <div class="fg"><label class="fl">AI Spotlight sentence</label><input class="fi" id="ach2-spot" placeholder="e.g. 1st Place MUT ICT Entrepreneurial Competition 2024 — Team Leader"/></div>
+        <div class="fg">
+          <label class="fl">Achievement photo</label>
+          <div class="upload-zone" onclick="document.getElementById('inp-ach2').click()"><i class="ti ti-photo"></i><span>Upload photo — animation flips to this one</span><small>JPG, PNG</small></div>
+          <input type="file" id="inp-ach2" accept="image/*" style="display:none" onchange="handleAchPhoto(this,2)"/>
+          <img id="prev-ach2" class="preview-photo"/>
+        </div>
+      </div>
+      <div class="ach-block">
+        <h4><i class="ti ti-text-size" style="font-size:12px;margin-right:4px;"></i> Additional AI Spotlight phrases</h4>
+        <div style="font-size:11px;color:var(--t2);margin-bottom:10px;">Add extra phrases that scroll in the AI Spotlight ticker alongside your achievement sentences.</div>
+        <div style="display:flex;gap:8px;margin-bottom:8px;">
+          <input class="fi" id="extra-phrase" placeholder="e.g. IBM Data Fundamentals certified — Jun 2025" style="flex:1;" onkeydown="if(event.key==='Enter')addPhrase();"/>
+          <button class="btn btnr" onclick="addPhrase()"><i class="ti ti-plus"></i> Add</button>
+        </div>
+        <div id="phrase-list" style="display:flex;flex-wrap:wrap;gap:4px;"></div>
+      </div>
+    </div>
+
+    <!-- STEP 2: CERTIFICATES -->
+    <div class="step-wrap" id="step2">
+      <div style="font-size:12px;color:var(--t2);margin-bottom:14px;">Add all your certificates. They appear on your dashboard and public profile.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:14px;">
+        <div class="fg" style="margin:0;"><label class="fl">Certificate name *</label><input class="fi" id="cert-name" placeholder="e.g. AWS Cloud Practitioner"/></div>
+        <div class="fg" style="margin:0;"><label class="fl">Issuing organisation *</label><input class="fi" id="cert-org" placeholder="e.g. Amazon Web Services"/></div>
+        <div class="fg" style="margin:0;"><label class="fl">Year</label><input class="fi" id="cert-year" placeholder="2025" style="width:80px;"/></div>
+      </div>
+      <button class="btn btnr" onclick="addCert()" style="margin-bottom:16px;"><i class="ti ti-plus"></i> Add certificate</button>
+      <div id="cert-list"></div>
+    </div>
+
+    <!-- STEP 3: SKILLS & PROJECTS -->
+    <div class="step-wrap" id="step3">
+      <div class="section-title"><i class="ti ti-star" style="font-size:13px;"></i> Skills</div>
+      <div style="display:flex;gap:8px;margin-bottom:10px;align-items:flex-end;">
+        <div class="fg" style="flex:1;margin:0;"><label class="fl">Skill name</label><input class="fi" id="skill-name" placeholder="e.g. React, Cloud, Python" onkeydown="if(event.key==='Enter')addSkill();"/></div>
+        <div class="fg" style="margin:0;"><label class="fl">Level %</label><input class="fi" id="skill-pct" placeholder="80" style="width:70px;"/></div>
+        <button class="btn btnr" onclick="addSkill()"><i class="ti ti-plus"></i></button>
+      </div>
+      <div id="skill-list" style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:22px;"></div>
+
+      <div class="section-title"><i class="ti ti-folder-code" style="font-size:13px;"></i> Projects</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <div class="fg" style="margin:0;"><label class="fl">Project name *</label><input class="fi" id="proj-name" placeholder="Project name"/></div>
+        <div class="fg" style="margin:0;"><label class="fl">Live URL</label><input class="fi" id="proj-url" placeholder="https://..."/></div>
+        <div class="fg" style="margin:0;grid-column:1/-1;"><label class="fl">Description</label><input class="fi" id="proj-desc" placeholder="Short description of what it does"/></div>
+        <div class="fg" style="margin:0;grid-column:1/-1;"><label class="fl">Tech tags <small style="color:var(--b3);">(comma separated)</small></label><input class="fi" id="proj-tags" placeholder="React, Firebase, TypeScript"/></div>
+      </div>
+      <button class="btn btnr" onclick="addProj()" style="margin-bottom:14px;"><i class="ti ti-plus"></i> Add project</button>
+      <div id="proj-list"></div>
+    </div>
+
+    <!-- STEP 4: ASSETS (CV + real video upload) -->
+    <div class="step-wrap" id="step4">
+
+      <!-- CV -->
+      <div class="fg">
+        <label class="fl">CV / Résumé</label>
+        <div class="upload-zone" onclick="document.getElementById('inp-cv').click()"><i class="ti ti-file-cv"></i><span>Upload your CV / Résumé</span><small>PDF &middot; max 10MB</small></div>
+        <input type="file" id="inp-cv" accept=".pdf" style="display:none" onchange="handleCV(this)"/>
+        <div id="cv-info" style="display:none;margin-top:8px;background:var(--bg2);border:.5px solid var(--bor);border-radius:8px;padding:9px 12px;align-items:center;gap:8px;">
+          <i class="ti ti-file-type-pdf" style="font-size:18px;color:var(--rm);"></i>
+          <div style="flex:1;font-size:12px;color:var(--t);" id="cv-fname">No file yet</div>
+          <span style="font-size:10px;color:var(--rm);">&#10003; Uploaded</span>
+        </div>
+      </div>
+
+      <!-- VIDEO UPLOAD -->
+      <div class="fg" style="margin-top:6px;">
+        <label class="fl" style="display:flex;align-items:center;justify-content:space-between;">
+          <span>Videos <small style="color:var(--b3);">— up to 3 &middot; max 5 min each &middot; max 100MB each</small></span>
+          <span id="vid-count-label" style="font-size:10px;color:var(--t2);">0 / 3</span>
+        </label>
+
+        <!-- Existing video list -->
+        <div id="vid-list" style="margin-bottom:10px;"></div>
+
+        <!-- Pending (uploading now, not yet labelled) -->
+        <div id="vid-pending" style="display:none;background:var(--bg2);border:.5px dashed var(--bor);border-radius:10px;padding:14px;margin-bottom:10px;">
+          <div style="font-size:12px;color:var(--rm);font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:6px;">
+            <i class="ti ti-video" style="font-size:14px;"></i> Video ready — give it a label
+          </div>
+          <video id="vid-pending-player" controls style="width:100%;height:120px;border-radius:8px;object-fit:cover;background:#000;display:block;margin-bottom:10px;"></video>
+          <div style="display:flex;gap:8px;align-items:flex-end;">
+            <div class="fg" style="flex:1;margin:0;">
+              <label class="fl">Video label *</label>
+              <input class="fi" id="vid-label-input" placeholder="e.g. About me, Project demo, Introduction" onkeydown="if(event.key==='Enter')confirmVideo();"/>
+            </div>
+            <button class="btn btnr" onclick="confirmVideo()" style="flex-shrink:0;"><i class="ti ti-check"></i> Add video</button>
+            <button class="btn" onclick="cancelVideo()" style="flex-shrink:0;" title="Discard this video"><i class="ti ti-x"></i></button>
+          </div>
+        </div>
+
+        <!-- Upload zone (hidden when at limit or pending) -->
+        <div id="vid-upload-zone">
+          <div class="upload-zone" onclick="document.getElementById('inp-vid').click()">
+            <i class="ti ti-video-plus" style="font-size:22px;"></i>
+            <span>Upload a video from your gallery or files</span>
+            <small>MP4, MOV &middot; max 100MB &middot; max 5 min</small>
+          </div>
+          <!-- accept="video/*" opens the gallery on mobile -->
+          <input type="file" id="inp-vid" accept="video/*" style="display:none" onchange="handleVid(this)"/>
+        </div>
+
+        <!-- At-limit message -->
+        <div id="vid-limit-msg" style="display:none;background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:12px 14px;text-align:center;">
+          <i class="ti ti-lock" style="font-size:18px;color:var(--b3);display:block;margin-bottom:4px;"></i>
+          <div style="font-size:12px;color:var(--t);font-weight:600;">Maximum 3 videos reached</div>
+          <div style="font-size:11px;color:var(--t2);margin-top:2px;">Remove a video to upload a new one.</div>
+        </div>
+      </div>
+
+      <!-- Profile strength -->
+      <div style="background:var(--bg2);border:.5px solid var(--bor);border-radius:10px;padding:14px;margin-top:8px;">
+        <div style="font-size:12px;font-weight:600;color:var(--t);margin-bottom:6px;"><i class="ti ti-check-circle" style="color:var(--rm);font-size:13px;margin-right:4px;"></i> Profile strength: <span id="strength-val" style="color:var(--rm);">0%</span></div>
+        <div style="height:6px;background:var(--bg);border-radius:9px;"><div id="strength-bar" style="height:6px;border-radius:9px;background:linear-gradient(90deg,var(--r),var(--rm));width:0%;transition:width .5s;"></div></div>
+        <div style="font-size:11px;color:var(--t2);margin-top:6px;" id="strength-msg"></div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <div style="padding:14px 26px;border-top:.5px solid var(--bor);display:flex;justify-content:space-between;align-items:center;">
+    <button class="btn" id="btn-back" onclick="prevStep()" style="display:none;">&#8592; Back</button>
+    <div style="font-size:11px;color:var(--b3);" id="step-ind">Step 1 of 5</div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn" onclick="saveDraft()"><i class="ti ti-device-floppy" style="font-size:12px;"></i> Save</button>
+      <button class="btn btnr" id="btn-next" onclick="nextStep()">Continue <i class="ti ti-arrow-right" style="font-size:11px;"></i></button>
+    </div>
+  </div>
+
+</div><!-- /card -->
+<div id="toast" style="display:none;position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--r);color:#fff;font-size:13px;padding:10px 22px;border-radius:30px;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:9999;">&#10003; Saved!</div>
+</div>
+</div>
+
+<script src="../js/store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script>
+var MAX_VIDEOS = 3;
+var MAX_VID_SECS = 300; // 5 minutes
+
+var curStep = 0;
+var profile = null;
+var signedIn = false;
+
+// Holds the pending video (file read as base64, duration) waiting to be labelled
+var pendingVideo = null;
+
+window.addEventListener('DOMContentLoaded', async function(){
+  // Resolve auth session first
+  try {
+    const userResult = await supabase.auth.getUser();
+    signedIn = !!(userResult.data && userResult.data.user);
+  } catch (e) {
+    signedIn = false;
+  }
+
+  // If a user is signed in, load their profile (or local draft).
+  // If no user is signed in (visiting to create a new account), always start with an empty profile
+  // and remove any lingering local signup draft so the form is blank for a new registrant.
+  if (signedIn) {
+    const savedDraft = localStorage.getItem('vaultme_signup_draft');
+    if (savedDraft) {
+      try { profile = JSON.parse(savedDraft); } catch (e) { profile = await VM.load(); }
+    } else {
+      profile = await VM.load();
+    }
+  } else {
+    localStorage.removeItem('vaultme_signup_draft');
+    profile = VM.defaults();
+  }
+
+  loadAll();
+  updateStrength();
+  var av = document.getElementById('navAv');
+  if (av && profile.profilePhoto) { av.innerHTML = '<img src="'+profile.profilePhoto+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>'; }
+  else if (av) { av.textContent = (profile.name||'?').charAt(0).toUpperCase(); }
+});
+
+function loadAll(){
+  setVal('f-name', profile.name); setVal('f-role', profile.role); setVal('f-location', profile.location);
+  setVal('f-email', profile.email); setVal('f-linkedin', profile.linkedin); setVal('f-github', profile.github);
+  setVal('f-bio', profile.bio);
+  if (profile.profilePhoto) { var ip = document.getElementById('preview-photo'); ip.src = profile.profilePhoto; ip.style.display = 'block'; }
+  var a = profile.achievements || [];
+  if (a[0]) { setVal('ach1-label', a[0].label); setVal('ach1-spot', a[0].spotlightText); if (a[0].photo) showImg('prev-ach1', a[0].photo); previewBadge(1); }
+  if (a[1]) { setVal('ach2-label', a[1].label); setVal('ach2-spot', a[1].spotlightText); if (a[1].photo) showImg('prev-ach2', a[1].photo); previewBadge(2); }
+  if (profile.cv) { var ci = document.getElementById('cv-info'); ci.style.display = 'flex'; document.getElementById('cv-fname').textContent = profile.cvName || 'CV uploaded'; }
+  renderCertList(); renderSkillList(); renderProjList(); renderVidList(); renderPhraseList();
+}
+
+function setVal(id, v) { var el = document.getElementById(id); if (!el) return; el.value = (typeof v === 'undefined' || v === null) ? '' : v; }
+function showImg(id, src) { var el = document.getElementById(id); if (el) { el.src = src; el.style.display = 'block'; } }
+
+function goStep(n){
+  if (curStep === 0 && n > 0 && !validateSignupStep0()) { return; }
+  document.querySelectorAll('.step-wrap').forEach(function(el, i){ el.classList.toggle('active', i === n); });
+  document.querySelectorAll('.step-pill').forEach(function(el, i){ el.className = 'step-pill' + (i < n ? ' done' : i === n ? ' cur' : ''); });
+  document.getElementById('btn-back').style.display = n === 0 ? 'none' : 'inline-flex';
+  document.getElementById('step-ind').textContent = 'Step ' + (n+1) + ' of 5';
+  if (n === 0) {
+    var backLink = document.querySelector('.topnav .tright a');
+    if (backLink) backLink.style.display = 'inline-flex';
+  }
+  var nb = document.getElementById('btn-next');
+  nb.innerHTML = n === 4 ? 'Finish &amp; go to dashboard <i class="ti ti-check" style="font-size:11px;"></i>' : 'Continue <i class="ti ti-arrow-right" style="font-size:11px;"></i>';
+  curStep = n;
+  if (n === 4) updateStrength();
+}
+async function nextStep(){
+  var btn = document.getElementById('btn-next');
+  if (btn) { btn.disabled = true; }
+  try {
+    saveAll();
+    if (curStep === 0 && !validateSignupStep0()) { return; }
+    if (curStep === 4) { await finishSignup(); } else { goStep(curStep + 1); }
+  } finally {
+    if (btn) { btn.disabled = false; }
+  }
+}
+
+async function finishSignup(){
+  saveAll();
+  try {
+    const authRes = await supabase.auth.getUser();
+    var user = authRes.data && authRes.data.user;
+    if (!user) {
+      var email = profile.email;
+      var password = getVal('f-password');
+      var passwordConfirm = getVal('f-password-confirm');
+
+      if (!email) { alert('Email is required to sign up.'); return; }
+      if (!password || !passwordConfirm) { alert('Please enter and confirm your password.'); return; }
+      if (password !== passwordConfirm) { alert('Passwords do not match.'); return; }
+      if (!validatePassword(password)) {
+        alert('Password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character.');
+        return;
+      }
+
+      const signup = await signUpWithProfile(email, password, profile);
+      if (signup && signup.error) {
+        alert(signup.error.message || 'Signup failed');
+        return;
+      }
+
+      alert('Account created successfully. Please sign in to continue.');
+      window.location.href = 'signin.html';
+      return;
+    }
+
+    await VM.save(profile);
+    window.location.href = '../index.html';
+  } catch (err) {
+    console.error(err);
+    alert('Signup/save failed: ' + (err.message || err));
+  }
+}
+
+function validateSignupStep0(){
+  const email = getVal('f-email');
+  const password = getVal('f-password');
+  const passwordConfirm = getVal('f-password-confirm');
+
+  if (!email || !VM.isValidEmail(email)) {
+    alert('Please enter a valid email to continue.');
+    return false;
+  }
+
+  if (!password || !passwordConfirm) {
+    alert('Please create and confirm your password before continuing.');
+    return false;
+  }
+
+  if (password !== passwordConfirm) {
+    alert('Passwords do not match.');
+    return false;
+  }
+
+  if (!validatePassword(password)) {
+    alert('Password must be at least 8 characters long and include 1 uppercase letter, 1 number, and 1 special character.');
+    return false;
+  }
+
+  return true;
+}
+
+function validatePassword(password) {
+  return /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+}
+
+function checkPasswordRequirements() {
+  const password = document.getElementById('f-password').value;
+  
+  // Check each requirement
+  const hasLength = password.length >= 8;
+  const hasUpper = /[A-Z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  
+  // Update UI for each requirement
+  updateRequirementUI('req-length', hasLength);
+  updateRequirementUI('req-upper', hasUpper);
+  updateRequirementUI('req-number', hasNumber);
+  updateRequirementUI('req-special', hasSpecial);
+}
+
+function updateRequirementUI(elementId, isMet) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  
+  const icon = element.querySelector('i');
+  if (isMet) {
+    element.style.color = 'var(--rl)';
+    element.style.fontWeight = '600';
+    if (icon) {
+      icon.className = 'ti ti-circle-check';
+      icon.style.color = 'var(--rl)';
+    }
+  } else {
+    element.style.color = 'var(--t2)';
+    element.style.fontWeight = '400';
+    if (icon) {
+      icon.className = 'ti ti-circle-x';
+      icon.style.color = 'var(--b3)';
+    }
+  }
+}
+function prevStep(){ saveAll(); goStep(curStep - 1); }
+
+async function saveAll(){
+  profile.name = getVal('f-name'); profile.role = getVal('f-role'); profile.location = getVal('f-location');
+  var emailVal = getVal('f-email');
+  if (emailVal && !VM.isValidEmail(emailVal)) {
+    var el = document.getElementById('f-email'); if (el) { el.style.borderColor = 'var(--rm)'; el.title = 'Please enter a valid email.'; }
+  } else {
+    var el2 = document.getElementById('f-email'); if (el2) { el2.style.borderColor = ''; el2.title = ''; }
+    profile.email = emailVal;
+  }
+  profile.linkedin = VM.normaliseSocialUrl(getVal('f-linkedin'));
+  profile.github = VM.normaliseSocialUrl(getVal('f-github'));
+  profile.bio = getVal('f-bio');
+  var a = profile.achievements || [];
+  var l1 = getVal('ach1-label'), s1 = getVal('ach1-spot');
+  var l2 = getVal('ach2-label'), s2 = getVal('ach2-spot');
+  if (l1) { if (!a[0]) a[0] = {label:'',spotlightText:'',photo:''}; a[0].label = l1; a[0].spotlightText = s1; }
+  if (l2) { if (!a[1]) a[1] = {label:'',spotlightText:'',photo:''}; a[1].label = l2; a[1].spotlightText = s2; }
+  profile.achievements = a.filter(function(x){ return x && x.label; });
+  localStorage.setItem('vaultme_signup_draft', JSON.stringify(profile));
+
+  try {
+    const { data } = await supabase.auth.getUser();
+    if (data && data.user) {
+      await VM.save(profile);
+    }
+  } catch (e) {
+    // silent: save draft locally if not signed in yet
+  }
+}
+function saveDraft(){ saveAll(); showToast(); }
+function showToast(){ var t = document.getElementById('toast'); t.style.display = 'block'; setTimeout(function(){ t.style.display = 'none'; }, 2200); }
+function getVal(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
+document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'hidden') saveAll(); });
+window.addEventListener('beforeunload', function(){ saveAll(); });
+
+function updateStrength(){
+  saveAll();
+  var s = VM.calcStrength(profile);
+  var bar = document.getElementById('strength-bar');
+  var val = document.getElementById('strength-val');
+  var msg = document.getElementById('strength-msg');
+  if (bar) bar.style.width = s + '%';
+  if (val) val.textContent = s + '%';
+  if (msg) {
+    var missing = [];
+    if (!profile.name) missing.push('name');
+    if (!profile.profilePhoto) missing.push('profile photo');
+    if (!profile.achievements.length) missing.push('at least 1 achievement');
+    if (!profile.certs.length) missing.push('a certificate');
+    if (!profile.cv) missing.push('CV');
+    msg.textContent = missing.length ? 'Still needed: ' + missing.join(', ') : 'Your profile is looking great!';
+  }
+}
+
+// ── Photo handlers ─────────────────────────────────────────────────
+async function handlePhoto(inp){
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 5);
+    profile.profilePhoto = b64; VM.save(profile);
+    var img = document.getElementById('preview-photo'); img.src = b64; img.style.display = 'block';
+    var av = document.getElementById('navAv');
+    if (av) av.innerHTML = '<img src="'+b64+'" style="display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;"/>';
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('Profile photo must be under 5 MB.');
+  }
+}
+async function handleAchPhoto(inp, idx){
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 5);
+    var a = profile.achievements || [];
+    if (!a[idx-1]) a[idx-1] = {label:'',spotlightText:'',photo:''};
+    a[idx-1].photo = b64;
+    var l = getVal('ach'+idx+'-label'), s = getVal('ach'+idx+'-spot');
+    if (l) a[idx-1].label = l; if (s) a[idx-1].spotlightText = s;
+    profile.achievements = a; VM.save(profile);
+    showImg('prev-ach'+idx, b64);
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('Achievement photo must be under 5 MB.');
+  }
+}
+async function handleCV(inp){
+  if (!inp.files[0]) return;
+  try {
+    var b64 = await VM.readFile(inp.files[0], 10);
+    profile.cv = b64; profile.cvName = inp.files[0].name; VM.save(profile);
+    var ci = document.getElementById('cv-info'); ci.style.display = 'flex';
+    document.getElementById('cv-fname').textContent = inp.files[0].name;
+    updateStrength();
+  } catch(e) {
+    if (e && e.message === 'FILE_TOO_LARGE') alert('CV must be under 10 MB.');
+  }
+}
+
+// ── Video handlers ─────────────────────────────────────────────────
+async function handleVid(inp){
+  if (!inp.files[0]) return;
+  var file = inp.files[0];
+
+  if ((profile.videos || []).length >= MAX_VIDEOS) {
+    alert('You already have ' + MAX_VIDEOS + ' videos. Remove one first.');
+    inp.value = ''; return;
+  }
+  if (file.size > 100 * 1024 * 1024) {
+    alert('Video must be under 100 MB.'); inp.value = ''; return;
+  }
+
+  // Show pending area immediately so user knows something is happening
+  document.getElementById('vid-pending').style.display = 'block';
+  document.getElementById('vid-upload-zone').style.display = 'none';
+  var player = document.getElementById('vid-pending-player');
+  var objectUrl = URL.createObjectURL(file);
+  player.src = objectUrl;
+
+  var tmpVid = document.createElement('video');
+  tmpVid.preload = 'metadata';
+  tmpVid.onloadedmetadata = async function(){
+    var secs = Math.round(tmpVid.duration);
+    var mins = Math.floor(secs / 60);
+    var secsRem = secs % 60;
+    var dur = mins + ':' + (secsRem < 10 ? '0' : '') + secsRem;
+
+    if (secs > MAX_VID_SECS) {
+      var limitMins = Math.floor(MAX_VID_SECS / 60);
+      alert('Video must be ' + limitMins + ' minutes or less (this one is ' + dur + '). Please trim it first.');
+      cancelVideo(); URL.revokeObjectURL(objectUrl); inp.value = ''; return;
+    }
+
+    try {
+      var b64 = await VM.readFile(file, 100);
+      // Store in pendingVideo — waits for the user to type a label
+      pendingVideo = { src: b64, duration: dur, _objectUrl: objectUrl };
+      // Focus the label input
+      var li = document.getElementById('vid-label-input');
+      if (li) { li.value = ''; li.focus(); }
+    } catch(e) {
+      alert('Video must be under 100 MB.');
+      cancelVideo(); URL.revokeObjectURL(objectUrl); inp.value = '';
+    }
+  };
+  tmpVid.onerror = function(){
+    alert('Could not read this video. Try MP4 or MOV.');
+    cancelVideo(); URL.revokeObjectURL(objectUrl); inp.value = '';
+  };
+  tmpVid.src = objectUrl;
+  inp.value = '';
+}
+
+function confirmVideo(){
+  if (!pendingVideo) return;
+  var label = document.getElementById('vid-label-input').value.trim();
+  if (!label) { document.getElementById('vid-label-input').focus(); alert('Please give this video a label before adding it.'); return; }
+
+  profile.videos = profile.videos || [];
+  profile.videos.push({ name: label, duration: pendingVideo.duration, src: pendingVideo.src });
+  VM.save(profile);
+
+  // Clean up
+  if (pendingVideo._objectUrl) URL.revokeObjectURL(pendingVideo._objectUrl);
+  pendingVideo = null;
+  document.getElementById('vid-pending-player').src = '';
+  document.getElementById('vid-label-input').value = '';
+  document.getElementById('vid-pending').style.display = 'none';
+
+  renderVidList();
+  updateStrength();
+  showToast();
+}
+
+function cancelVideo(){
+  if (pendingVideo && pendingVideo._objectUrl) URL.revokeObjectURL(pendingVideo._objectUrl);
+  pendingVideo = null;
+  document.getElementById('vid-pending-player').src = '';
+  document.getElementById('vid-label-input').value = '';
+  document.getElementById('vid-pending').style.display = 'none';
+  renderVidList(); // refreshes upload zone visibility
+}
+
+function removeVid(i){
+  profile.videos.splice(i, 1); VM.save(profile);
+  renderVidList(); updateStrength();
+}
+
+function renderVidList(){
+  var videos = profile.videos || [];
+  var count = videos.length;
+  var atLimit = count >= MAX_VIDEOS;
+  var hasPending = pendingVideo !== null;
+
+  // Count label
+  document.getElementById('vid-count-label').textContent = count + ' / ' + MAX_VIDEOS;
+
+  // Upload zone: hidden if at limit OR a video is pending labelling
+  document.getElementById('vid-upload-zone').style.display = (atLimit || hasPending) ? 'none' : 'block';
+  document.getElementById('vid-limit-msg').style.display = (atLimit && !hasPending) ? 'block' : 'none';
+
+  var el = document.getElementById('vid-list');
+  if (!videos.length) { el.innerHTML = ''; return; }
+
+  el.innerHTML = videos.map(function(v, i){
+    var playerHtml = v.src
+      ? '<video src="'+v.src+'" controls style="width:100%;height:100px;object-fit:cover;display:block;background:#000;"></video>'
+      : '';
+    return '<div class="vid-card">' + playerHtml +
+      '<div class="vid-card-body">' +
+      '<i class="ti ti-video" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i>' +
+      '<div style="flex:1;"><div style="font-size:12px;font-weight:600;color:var(--t);">'+esc(v.name)+'</div>' +
+      '<div style="font-size:10px;color:var(--t2);">'+(v.duration||'')+'</div></div>' +
+      '<button class="rm-btn" onclick="removeVid('+i+')" aria-label="Remove video" title="Remove video"><i class="ti ti-trash"></i></button>' +
+      '</div></div>';
+  }).join('');
+}
+
+// ── Cert / skill / project / phrase ────────────────────────────────
+function previewBadge(idx){
+  var lbl = getVal('ach'+idx+'-label');
+  var prev = document.getElementById('badge'+idx+'-preview');
+  var txt = document.getElementById('badge'+idx+'-text');
+  if (prev && txt) { prev.style.display = lbl ? 'block' : 'none'; if (lbl) txt.textContent = lbl; }
+}
+function addCert(){
+  var n = getVal('cert-name'), o = getVal('cert-org'), y = getVal('cert-year');
+  if (!n || !o) return;
+  profile.certs = profile.certs || []; profile.certs.push({name:n,org:o,year:y}); VM.save(profile);
+  ['cert-name','cert-org','cert-year'].forEach(function(id){ document.getElementById(id).value = ''; });
+  renderCertList();
+}
+function removeCert(i){ profile.certs.splice(i,1); VM.save(profile); renderCertList(); }
+function renderCertList(){
+  var el = document.getElementById('cert-list'); if (!el) return;
+  el.innerHTML = (profile.certs||[]).map(function(c,i){
+    return '<div class="list-item"><i class="ti ti-certificate" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(c.name)+'</div><div style="font-size:10px;color:var(--t2);">'+esc(c.org)+(c.year?' &middot; '+esc(c.year):'')+'</div></div><button class="rm-btn" onclick="removeCert('+i+')" aria-label="Remove" title="Remove"><i class="ti ti-trash"></i></button></div>';
+  }).join('');
+}
+function addSkill(){
+  var n = getVal('skill-name'), p = parseInt(document.getElementById('skill-pct').value)||70;
+  if (!n) return;
+  profile.skills = profile.skills || []; profile.skills.push({name:n,pct:Math.min(100,Math.max(1,p))}); VM.save(profile);
+  document.getElementById('skill-name').value = ''; document.getElementById('skill-pct').value = '';
+  renderSkillList();
+}
+function removeSkill(i){ profile.skills.splice(i,1); VM.save(profile); renderSkillList(); }
+function renderSkillList(){
+  var el = document.getElementById('skill-list'); if (!el) return;
+  el.innerHTML = (profile.skills||[]).map(function(s,i){
+    return '<span class="pill-tag">'+esc(s.name)+' '+s.pct+'% <button onclick="removeSkill('+i+')" style="background:none;border:none;color:var(--rm);cursor:pointer;font-size:11px;">&#215;</button></span>';
+  }).join('');
+}
+function addProj(){
+  var n = getVal('proj-name'), u = getVal('proj-url'), d = getVal('proj-desc');
+  var tags = document.getElementById('proj-tags').value.split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  if (!n) return;
+  profile.projects = profile.projects || []; profile.projects.push({name:n,url:u,desc:d,tags:tags}); VM.save(profile);
+  ['proj-name','proj-url','proj-desc','proj-tags'].forEach(function(id){ document.getElementById(id).value=''; });
+  renderProjList();
+}
+function removeProj(i){ profile.projects.splice(i,1); VM.save(profile); renderProjList(); }
+function renderProjList(){
+  var el = document.getElementById('proj-list'); if (!el) return;
+  el.innerHTML = (profile.projects||[]).map(function(p,i){
+    return '<div class="list-item"><i class="ti ti-folder-code" style="color:var(--rm);font-size:15px;flex-shrink:0;"></i><div style="flex:1;"><div style="font-size:12px;font-weight:500;color:var(--t);">'+esc(p.name)+'</div><div style="font-size:10px;color:var(--t2);">'+(p.url?'<a href="'+esc(p.url)+'" target="_blank" style="color:var(--rm);">live demo</a> &middot; ':'')+esc((p.tags||[]).join(', '))+'</div></div><button class="rm-btn" onclick="removeProj('+i+')" aria-label="Remove" title="Remove"><i class="ti ti-trash"></i></button></div>';
+  }).join('');
+}
+function addPhrase(){
+  var v = getVal('extra-phrase'); if (!v) return;
+  profile.spotlightPhrases = profile.spotlightPhrases || []; profile.spotlightPhrases.push(v); VM.save(profile);
+  document.getElementById('extra-phrase').value = ''; renderPhraseList();
+}
+function removePhrase(i){ profile.spotlightPhrases.splice(i,1); VM.save(profile); renderPhraseList(); }
+function renderPhraseList(){
+  var el = document.getElementById('phrase-list'); if (!el) return;
+  el.innerHTML = (profile.spotlightPhrases||[]).map(function(p,i){
+    return '<span class="pill-tag" style="max-width:100%;word-break:break-word;">'+esc(p)+' <button onclick="removePhrase('+i+')" style="background:none;border:none;color:var(--rm);cursor:pointer;font-size:11px;">&#215;</button></span>';
+  }).join('');
+}
+function esc(s){ return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+</script>
+</body></html>

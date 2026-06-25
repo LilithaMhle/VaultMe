@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>View Your Profile — VaultMe</title>
+<meta name="description" content="View your VaultMe profile — achievements, certificates, projects and skills."/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27><rect width=%27100%27 height=%27100%27 rx=%2720%27 fill=%27%231d4ed8%27/><text y=%27.9em%27 font-size=%2780%27>🔐</text></svg>"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css"/>
+<link rel="stylesheet" href="../css/shared.css"/>
+<style>
+.pub-nav{position:sticky;top:0;z-index:100;background:rgba(6,11,20,.92);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:.5px solid var(--bor);padding:0 40px;height:54px;display:flex;align-items:center;justify-content:space-between;}
+.pub-body{max-width:1100px;margin:0 auto;padding:36px 40px;}
+.pub-section{margin-bottom:44px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.pub-cert-card{background:var(--c);border:.5px solid var(--bor);border-radius:13px;padding:15px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s,transform .2s;cursor:pointer;}
+.pub-cert-card:hover{border-color:var(--rm);transform:translateY(-2px);}
+.pub-proj-card{background:var(--c);border:.5px solid var(--bor);border-radius:13px;padding:15px;transition:border-color .2s,transform .2s;}
+.pub-proj-card:hover{border-color:var(--rm);transform:translateY(-2px);}
+.pub-footer{background:var(--bg2);border-top:.5px solid var(--bor);padding:32px 40px;}
+.pub-footer-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.flink{font-size:12px;color:var(--t2);text-decoration:none;display:flex;align-items:center;gap:5px;transition:color .2s;}
+.flink:hover{color:var(--rm);}
+</style>
+</head>
+<body>
+
+<!-- PUBLIC NAV -->
+<nav class="pub-nav">
+  <a style="display:flex;align-items:center;gap:7px;font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--t);text-decoration:none;" href="../index.html">
+    <div class="lic"><i class="ti ti-vault"></i></div>VaultMe
+  </a>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <a class="btn" id="cv-pub-btn" style="display:none;" download><i class="ti ti-download" style="font-size:12px;"></i> Download CV</a>
+    <a class="btn" id="email-btn" style="display:none;"><i class="ti ti-mail" style="font-size:12px;"></i> Contact</a>
+    <button class="btn btn-sm" onclick="logout()" style="margin-right:8px;">Logout</button>
+    <a class="btn btnr" href="../index.html"><i class="ti ti-arrow-left" style="font-size:12px;"></i> Back to vault</a>
+  </div>
+</nav>
+
+<!-- AI TICKER -->
+<div id="ticker-mount"></div>
+
+<!-- HERO -->
+<section style="position:relative;overflow:hidden;padding:50px 40px 10px;background:radial-gradient(ellipse at 20% 80%,rgba(29,78,216,.14),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(30,58,95,.1),transparent 50%),var(--bg);">
+  <div style="position:absolute;inset:0;background-image:linear-gradient(var(--bor) .5px,transparent .5px),linear-gradient(90deg,var(--bor) .5px,transparent .5px);background-size:60px 60px;opacity:.08;pointer-events:none;"></div>
+  <div style="position:relative;z-index:2;max-width:1100px;margin:0 auto;display:flex;gap:50px;align-items:flex-start;flex-wrap:wrap;">
+    <div style="flex:1;min-width:260px;padding-top:20px;">
+      <div id="pub-open-tag" style="display:none;margin-bottom:14px;"><span style="display:inline-flex;align-items:center;gap:5px;font-size:11px;background:var(--b2);color:var(--rl);padding:4px 12px;border-radius:20px;border:.5px solid var(--bor);font-weight:600;"><i class="ti ti-circle-check" style="font-size:12px;"></i> Open to opportunities</span></div>
+      <div class="pub-name" id="pub-name">Loading...</div>
+      <div style="font-size:16px;color:var(--t2);margin-top:8px;" id="pub-role"></div>
+      <div style="font-size:13px;color:var(--t3);margin-top:12px;line-height:1.7;max-width:480px;opacity:.85;" id="pub-bio"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;" id="pub-tags"></div>
+      <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;" id="pub-cta"></div>
+    </div>
+    <div style="width:360px;flex-shrink:0;" id="pub-anim"></div>
+  </div>
+</section>
+
+<!-- BODY -->
+<div class="pub-body">
+
+  <!-- ACHIEVEMENTS -->
+  <div class="pub-section" id="pub-ach-sec" style="display:none;">
+    <div class="section-title"><i class="ti ti-sparkles" style="font-size:14px;"></i> Standout achievements</div>
+    <div id="pub-ach-grid" class="grid2"></div>
+  </div>
+
+  <!-- CERTIFICATES -->
+  <div class="pub-section" id="pub-cert-sec" style="display:none;">
+    <div class="section-title"><i class="ti ti-certificate" style="font-size:14px;"></i> Certificates</div>
+    <div id="pub-cert-grid" class="grid4"></div>
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="pub-section" id="pub-proj-sec" style="display:none;">
+    <div class="section-title"><i class="ti ti-folder-code" style="font-size:14px;"></i> Projects</div>
+    <div id="pub-proj-grid" class="grid3"></div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="pub-section" id="pub-skill-sec" style="display:none;">
+    <div class="section-title"><i class="ti ti-star" style="font-size:14px;"></i> Skills</div>
+    <div id="pub-skill-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;background:var(--c);border:.5px solid var(--bor);border-radius:14px;padding:18px;"></div>
+  </div>
+
+  <!-- VIDEOS -->
+  <div class="pub-section" id="pub-vid-sec" style="display:none;">
+    <div class="section-title"><i class="ti ti-video" style="font-size:14px;"></i> Video showcase</div>
+    <div id="pub-vid-grid" class="grid3"></div>
+  </div>
+
+  <!-- EMPTY -->
+  <div id="pub-empty" style="display:none;text-align:center;padding:80px 20px;">
+    <i class="ti ti-lock" style="font-size:48px;color:var(--b3);display:block;margin-bottom:16px;"></i>
+    <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--t);margin-bottom:8px;">Profile not set up yet</div>
+    <div style="font-size:13px;color:var(--t2);margin-bottom:20px;">This profile hasn't been configured. If this is your profile, set it up first.</div>
+    <a class="btn btnr" href="signup.html"><i class="ti ti-user-plus"></i> Set up profile</a>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer class="pub-footer">
+  <div class="pub-footer-inner">
+    <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--t2);display:flex;align-items:center;gap:7px;"><div class="lic"><i class="ti ti-vault"></i></div> VaultMe &nbsp;&middot;&nbsp; <span id="foot-name"></span></div>
+    <div style="display:flex;gap:16px;" id="foot-links"></div>
+    <a class="btn btnr" id="foot-cv" style="display:none;" download><i class="ti ti-download" style="font-size:12px;"></i> Download CV</a>
+  </div>
+</footer>
+
+<script src="../js/store.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+<script>
+var COLORS=['#0a1628','#0d1e3a','#0f2347','#071428','#0c1d38','#091630','#0e2040','#071020'];
+var ICOLORS=['#60a5fa','#c084fc','#86efac','#93c5fd','#67e8f9','#facc15','#93c5fd','#a78bfa'];
+var ICONS=['ti-certificate','ti-cloud','ti-shield','ti-brain','ti-database','ti-brand-windows','ti-code','ti-star'];
+var VID_BG=['linear-gradient(145deg,#0a1628,#1d4ed8)','linear-gradient(145deg,#0f1a2e,#1e3a5f)','linear-gradient(145deg,#0d1a30,#0a1628)'];
+
+window.addEventListener('DOMContentLoaded', async function(){
+  try {
+    const { data } = await supabase.auth.getSession();
+    if (!data || !data.session) {
+      location.href = 'signin.html';
+      return;
+    }
+  } catch (e) {
+    console.error(e);
+    location.href = 'signin.html';
+    return;
+  }
+
+  var p = await VM.load();
+  if(!p.name && !p.achievements.length){ document.getElementById('pub-empty').style.display='block'; return; }
+
+  // Ticker
+  document.getElementById('ticker-mount').innerHTML = VM.renderTicker(p);
+
+  // Name & role
+  var names = (p.name||'Unknown').split(' ');
+  document.getElementById('pub-name').innerHTML = names.slice(0,-1).join(' ')+(names.length>1?'<br/>':'')+'<span style="color:var(--rm);">'+(names[names.length-1]||p.name)+'</span>';
+  document.getElementById('pub-role').textContent = [p.role,p.location].filter(Boolean).join(' · ');
+  if(p.bio) document.getElementById('pub-bio').textContent = p.bio;
+  if(p.email||p.linkedin||p.github) document.getElementById('pub-open-tag').style.display='block';
+
+  // Tags
+  var tags=[];
+  (p.achievements||[]).forEach(function(a){if(a.label)tags.push({i:'ti-sparkles',t:a.label});});
+  (p.skills||[]).slice(0,4).forEach(function(s){tags.push({i:'ti-code',t:s.name});});
+  document.getElementById('pub-tags').innerHTML=tags.map(function(t){
+    return '<span style="font-size:11px;padding:4px 11px;border-radius:20px;background:var(--b2);color:var(--rl);font-weight:500;border:.5px solid var(--bor);display:inline-flex;align-items:center;gap:4px;"><i class="ti '+t.i+'" style="font-size:10px;"></i>'+esc(t.t)+'</span>';
+  }).join('');
+
+  // CTA
+  var ctas='';
+  var linkedinUrl=VM.normaliseSocialUrl(p.linkedin);
+  var githubUrl=VM.normaliseSocialUrl(p.github);
+  if(p.email&&VM.isValidEmail(p.email)){ ctas+='<a class="btn btnr" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:12px;"></i> Get in touch</a>'; document.getElementById('email-btn').style.display='inline-flex'; document.getElementById('email-btn').href='mailto:'+p.email; }
+  if(p.cv){ ctas+='<a class="btn" href="'+p.cv+'" download="'+(p.cvName||'CV.pdf')+'"><i class="ti ti-download" style="font-size:12px;"></i> Download CV</a>'; document.getElementById('cv-pub-btn').style.display='inline-flex'; document.getElementById('cv-pub-btn').href=p.cv; document.getElementById('cv-pub-btn').download=p.cvName||'CV.pdf'; }
+  if(linkedinUrl){ ctas+='<a class="btn" href="'+esc(linkedinUrl)+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:12px;"></i> LinkedIn</a>'; }
+  if(githubUrl){ ctas+='<a class="btn" href="'+esc(githubUrl)+'" target="_blank"><i class="ti ti-brand-github" style="font-size:12px;"></i> GitHub</a>'; }
+  document.getElementById('pub-cta').innerHTML=ctas;
+
+  // Animation
+  document.getElementById('pub-anim').innerHTML = VM.renderDragAnim(p,'../');
+
+  // Achievements
+  if(p.achievements&&p.achievements.length){
+    document.getElementById('pub-ach-sec').style.display='block';
+    document.getElementById('pub-ach-grid').innerHTML=p.achievements.map(function(a){
+      var img=a.photo?'<img src="'+a.photo+'" style="width:100%;height:180px;object-fit:cover;object-position:top;border-radius:10px;margin-bottom:12px;"/>':'<div style="width:100%;height:100px;background:var(--b2);border-radius:10px;margin-bottom:12px;display:flex;align-items:center;justify-content:center;"><i class="ti ti-photo" style="font-size:28px;color:var(--b3);"></i></div>';
+      return '<div style="background:linear-gradient(135deg,#060b14,#0d1a30);border:.5px solid var(--bor);border-radius:16px;padding:20px;position:relative;overflow:hidden;"><div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.15),transparent 70%);pointer-events:none;"></div><div style="position:absolute;top:12px;left:12px;background:linear-gradient(135deg,var(--r),var(--b3));color:#fff;font-size:9px;font-weight:700;padding:3px 9px;border-radius:20px;z-index:2;"><i class="ti ti-sparkles" style="font-size:9px;margin-right:3px;"></i>'+esc(a.label)+'</div>'+img+'<div style="font-family:Syne,sans-serif;font-size:16px;font-weight:700;color:var(--t);">'+esc(a.label)+'</div><div style="font-size:12px;color:var(--t2);margin-top:6px;line-height:1.6;">'+esc(a.spotlightText)+'</div></div>';
+    }).join('');
+  }
+
+  // Certs
+  if(p.certs&&p.certs.length){
+    document.getElementById('pub-cert-sec').style.display='block';
+    document.getElementById('pub-cert-grid').innerHTML=p.certs.map(function(c,i){
+      return '<div class="pub-cert-card"><div style="width:40px;height:40px;border-radius:9px;background:'+COLORS[i%COLORS.length]+';display:flex;align-items:center;justify-content:center;"><i class="ti '+ICONS[i%ICONS.length]+'" style="font-size:20px;color:'+ICOLORS[i%ICOLORS.length]+';"></i></div><div style="font-family:Syne,sans-serif;font-size:12px;font-weight:700;color:var(--t);">'+esc(c.name)+'</div><div style="font-size:10px;color:var(--t2);">'+esc(c.org)+'</div><div style="font-size:10px;color:var(--rm);background:var(--b2);padding:2px 7px;border-radius:20px;align-self:flex-start;font-weight:600;">'+(c.year||'')+'</div></div>';
+    }).join('');
+  }
+
+  // Projects
+  if(p.projects&&p.projects.length){
+    document.getElementById('pub-proj-sec').style.display='block';
+    document.getElementById('pub-proj-grid').innerHTML=p.projects.map(function(pr,i){
+      var pills=(pr.tags||[]).map(function(t){return '<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:var(--b2);color:var(--rl);">'+esc(t)+'</span>';}).join('');
+      return '<div class="pub-proj-card"><div style="width:40px;height:40px;border-radius:9px;background:'+COLORS[i%COLORS.length]+';display:flex;align-items:center;justify-content:center;margin-bottom:11px;"><i class="ti ti-code" style="font-size:20px;color:'+ICOLORS[i%ICOLORS.length]+';"></i></div><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--t);">'+esc(pr.name)+'</div><div style="font-size:12px;color:var(--t2);margin-top:4px;line-height:1.55;">'+esc(pr.desc||'')+'</div><div style="display:flex;gap:4px;margin-top:9px;flex-wrap:wrap;">'+pills+'</div>'+(pr.url?'<a href="'+esc(pr.url)+'" target="_blank" class="btn btn-sm" style="margin-top:10px;font-size:11px;"><i class="ti ti-external-link" style="font-size:11px;"></i> Live demo</a>':'')+'</div>';
+    }).join('');
+  }
+
+  // Skills
+  if(p.skills&&p.skills.length){
+    document.getElementById('pub-skill-sec').style.display='block';
+    document.getElementById('pub-skill-grid').innerHTML=p.skills.map(function(s){
+      return '<div class="skill-bar-row"><div class="skill-bar-lbl"><span>'+esc(s.name)+'</span><span>'+s.pct+'%</span></div><div class="skill-bar-track"><div class="skill-bar-fill" style="width:'+s.pct+'%;"></div></div></div>';
+    }).join('');
+  }
+
+  // Videos
+  if(p.videos&&p.videos.length){
+    document.getElementById('pub-vid-sec').style.display='block';
+    document.getElementById('pub-vid-grid').innerHTML=p.videos.map(function(v,i){
+      var mediaHtml = v.src
+        ? '<video src="'+v.src+'" controls style="width:100%;height:140px;object-fit:cover;display:block;background:#000;"></video>'
+        : '<div style="height:140px;background:'+VID_BG[i%3]+';display:flex;align-items:center;justify-content:center;"><i class="ti ti-video-off" style="font-size:24px;color:var(--b3);"></i></div>';
+      return '<div style="background:var(--c);border:.5px solid var(--bor);border-radius:13px;overflow:hidden;">'+mediaHtml+'<div style="padding:12px 14px;"><div style="font-family:Syne,sans-serif;font-size:13px;font-weight:700;color:var(--t);">'+esc(v.name)+'</div><div style="font-size:11px;color:var(--t2);margin-top:2px;">'+(v.duration||'')+'</div></div></div>';
+    }).join('');
+  }
+
+  // Footer
+  document.getElementById('foot-name').textContent = p.name||'';
+  var flinks='';
+  if(p.email&&VM.isValidEmail(p.email))flinks+='<a class="flink" href="mailto:'+esc(p.email)+'"><i class="ti ti-mail" style="font-size:13px;"></i> '+esc(p.email)+'</a>';
+  if(linkedinUrl)flinks+='<a class="flink" href="'+esc(linkedinUrl)+'" target="_blank"><i class="ti ti-brand-linkedin" style="font-size:13px;"></i> LinkedIn</a>';
+  if(githubUrl)flinks+='<a class="flink" href="'+esc(githubUrl)+'" target="_blank"><i class="ti ti-brand-github" style="font-size:13px;"></i> GitHub</a>';
+  document.getElementById('foot-links').innerHTML=flinks;
+  if(p.cv){ var fc=document.getElementById('foot-cv');fc.style.display='inline-flex';fc.href=p.cv;fc.download=p.cvName||'CV.pdf'; }
+});
+function esc(s){return String(s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+</script>
+</body></html>
