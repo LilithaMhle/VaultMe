@@ -212,4 +212,3 @@ This project was developed for educational purposes.
 © 2026 Lilitha Mhle. All Rights Reserved.
 ```
 
-*README maintained by Zibusiso Ntethelelo Msane — VaultMe project.*
